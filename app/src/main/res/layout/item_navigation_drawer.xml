@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/tile_height_1row_icon">
+    <ImageView
+        android:id="@+id/drawer_item_image"
+        android:layout_width="@dimen/tile_icon_size"
+        android:layout_height="@dimen/tile_icon_size"
+        android:layout_marginStart="@dimen/icon_padding_1row_left"
+        android:layout_marginTop="@dimen/text_padding_1row_top"/>
+    <TextView
+        android:id="@+id/drawer_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_padding_1row_top"
+        android:layout_marginStart="@dimen/text_padding_1row_left"
+        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:paddingBottom="@dimen/text_padding_1row_botton"
+        android:textColor="@drawable/navigation_text_color"/>
+
+</RelativeLayout>

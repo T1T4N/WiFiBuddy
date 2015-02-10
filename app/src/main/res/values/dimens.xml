@@ -1,0 +1,44 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
+         https://developer.android.com/design/patterns/navigation-drawer.html -->
+
+    <dimen name="navigation_drawer_width">300dp</dimen>
+    <dimen name="tile_icon_size">24dp</dimen>
+
+    <dimen name="tile_height_3row">88dp</dimen>
+    <dimen name="tile_height_2row">72dp</dimen>
+    <dimen name="tile_height_1row_icon">56dp</dimen>
+    
+    <dimen name="tile_padding_side">16dp</dimen>
+    <dimen name="tile_padding_small">8dp</dimen>
+    <dimen name="tile_padding_large">20dp</dimen>
+    <dimen name="tile_padding_xlarge">48dp</dimen>
+    <dimen name="tile_padding_xxxlarge">72dp</dimen>
+
+    <dimen name="tile_padding_top_3row">16dp</dimen>
+    <dimen name="tile_padding_top_2row">20dp</dimen>
+    <dimen name="tile_padding_bottom">20dp</dimen>
+    
+    <dimen name="icon_padding_1row_left">16dp</dimen>
+    <dimen name="text_padding_1row_left">72dp</dimen>
+    <dimen name="text_padding_1row_top">16dp</dimen>
+    <dimen name="text_padding_1row_botton">20dp</dimen>
+
+    <dimen name="dialog_content_padding">24dp</dimen>
+    <dimen name="dialog_content_padding_bottom">16dp</dimen>
+    <dimen name="dialog_actions_height">48dp</dimen>
+    <dimen name="dialog_actions_padding_right">16dp</dimen>
+    <dimen name="dialog_actions_padding_bottom">8dp</dimen>
+
+    <dimen name="dialog_padding_top">20dp</dimen>
+    <dimen name="dialog_padding_top_question">16dp</dimen>
+
+    <dimen name="map_height">350dp</dimen>
+    <dimen name="parallax_offset">200dp</dimen>
+    <dimen name="divider_height">1dp</dimen>
+
+</resources>

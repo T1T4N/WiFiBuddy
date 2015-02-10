@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="url_auth">http://192.168.55.102:3000/Users/Authenticated</string>
+    <string name="url_register">http://192.168.55.102:3000/Users</string>
+    <string name="url_private_aps">http://192.168.55.102:3000/Users/Authenticated/AccessPoints</string>
+    <string name="url_public_aps">http://192.168.55.102:3000/AccessPoints</string>
+</resources>

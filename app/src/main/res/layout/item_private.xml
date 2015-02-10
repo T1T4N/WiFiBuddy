@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tile_height_3row">
+    <TextView
+        android:id="@+id/section_header_private"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:paddingTop="@dimen/tile_padding_small"
+        android:paddingBottom="@dimen/tile_padding_small"
+        android:paddingStart="@dimen/tile_padding_side"
+        android:paddingEnd="@dimen/tile_padding_side"
+        android:background="@color/light_grey"
+        android:textColor="@color/dark_grey"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/lTitle_private"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/section_header_private"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/tile_padding_top_3row"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"
+        android:text="@string/placeholder_text"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/lSubtitle_private"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lTitle_private"
+        android:layout_alignParentStart="true"
+
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"
+
+        android:text="@string/placeholder_text"/>
+
+    <TextView
+        android:id="@+id/lSubtitle2_private"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"
+        android:layout_below="@+id/lSubtitle_private"
+
+        android:paddingBottom="@dimen/tile_padding_bottom"
+
+        android:text="@string/placeholder_text"
+        android:textSize="14sp"
+        android:textColor="#ff2e2e2e"
+        android:layout_alignParentStart="true"/>
+
+</RelativeLayout>

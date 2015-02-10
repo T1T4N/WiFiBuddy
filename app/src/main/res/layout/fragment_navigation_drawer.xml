@@ -1,0 +1,46 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/navigation_drawer_main"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    tools:context=".NavigationDrawerFragment">
+    <!-- android:paddingTop="?attr/actionBarSize" -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/navigation_image_header"
+        android:background="@drawable/drawer_background"/>
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_alignTop="@id/navigation_image_header"
+        android:layout_marginStart="@dimen/tile_padding_side"
+        android:layout_marginTop="@dimen/text_padding_1row_top"
+        android:id="@+id/navigation_image_avatar"/>
+    <TextView
+        android:id="@+id/navigation_text_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:layout_alignBottom="@id/navigation_image_header"
+        android:layout_marginStart="@dimen/tile_padding_side"
+        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"/>
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/drawer_list"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_below="@+id/navigation_image_header"
+              android:choiceMode="singleChoice"
+              android:divider="@android:color/transparent"
+              android:dividerHeight="0dp"
+              >
+    </ListView>
+</RelativeLayout>

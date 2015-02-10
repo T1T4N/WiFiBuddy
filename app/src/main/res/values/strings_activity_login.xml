@@ -1,0 +1,24 @@
+<resources>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_passwords_no_match">The passwords must match</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_login_exists">This email is already registered</string>
+    <string name="error_login_invalid">This email and password combination is invalid</string>
+    <string name="error_login_connection">Connection error occurred</string>
+    <string name="error_login_unknown">An unknown error occurred</string>
+
+    <string name="profile_change_success">Password changed successfully</string>
+
+    <string name="error_field_required">This field is required</string>
+    <string name="login_success">Login successful</string>
+    <string name="register_success">User registered successfully</string>
+</resources>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WiFi Buddy</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
+    <string name="action_scan">Scan nearby</string>
+    <string name="placeholder_text">Placeholder Text</string>
+    <string name="header_private">Private Access Points</string>
+    <string name="header_public">Public Access Points</string>
+
+    <string name="profile_email">Email:</string>
+    <string name="profile_password">Current pass:</string>
+    <string name="profile_repeat1_hint">New password</string>
+    <string name="profile_repeat2_hint">Repeat</string>
+    <string name="profile_error_password_change">Password cannot be changed</string>
+    <string name="profile_error_no_connection">No internet connection present</string>
+    <string name="profile_error_connection">@string/error_login_connection</string>
+    <string name="profile_error_unknown">@string/error_login_unknown</string>
+
+    <string name="profile_count_private">Private APs:</string>
+    <string name="profile_count_public">Public APs:</string>
+
+    <string name="scan_label_password">Password:</string>
+    <string name="scan_label_publisher">Publisher:</string>
+
+    <string name="scan_progress">Scanning nearby access points</string>
+    <string name="scan_no_results">No results. Check if wireless is on</string>
+    <string name="scan_no_match">Sorry, no matching access points found</string>
+    <string name="scan_none_in_range">No access points in range</string>
+    <string name="scan_not_found_range">No access points that are in range were found</string>
+    <string name="scan_connection_error">Authentication error occurred while connecting to the AP</string>
+    <!-- The network's password might have been changed in the meantime. -->
+    <string name="scan_connection_success">Successfully connected to the AP</string>
+
+    <string name="scan_dialog_title">Enable WiFi connection?</string>
+    <string name="scan_dialog_question">Your WiFi connection seems to be disabled.\nIt is required in order to scan nearby access points.</string>
+    <string name="scan_dialog_action_positive">AGREE</string>
+    <string name="scan_dialog_action_negative">DISAGREE</string>
+
+    <string-array name="drawer_labels">
+        <item>Profile</item>
+        <item>My Access Points</item>
+        <item>Scan Access Points</item>
+        <item>Around Me</item>
+    </string-array>
+
+    <string-array name="toolbar_titles">
+        <item>Profile</item>
+        <item>My APs</item>
+        <item>Scan APs</item>
+        <item>Around Me</item>
+    </string-array>
+
+    <string-array name="privacy_types">
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
+
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_edit">Edit AP</string>
+
+    <string name="hello_world">Hello world!</string>
+</resources>
