@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -30,14 +29,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.sothree.slidinguppanel.SlidingDownPanelLayout;
+import com.titantech.wifibuddy.models.ui.SlidingDownPanelLayout;
+
 import com.titantech.wifibuddy.R;
-import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.Utils;
-import com.titantech.wifibuddy.provider.WifiContentProvider;
 
 import java.util.Date;
 

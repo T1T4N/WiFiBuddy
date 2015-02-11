@@ -1,4 +1,4 @@
-package com.titantech.wifibuddy.controllers;
+package com.titantech.wifibuddy.controllers.listeners;
 
 /**
  * Created by Robert on 24.01.2015.

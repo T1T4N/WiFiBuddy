@@ -1,7 +1,6 @@
 package com.titantech.wifibuddy;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -23,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.titantech.wifibuddy.controllers.*;
+import com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListener;
+import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.User;

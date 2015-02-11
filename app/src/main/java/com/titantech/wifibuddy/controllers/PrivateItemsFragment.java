@@ -14,15 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.shamanland.fab.FloatingActionButton;
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.adapters.PrivateItemsAdapter;
+import com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListener;
+import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
+import com.titantech.wifibuddy.controllers.listeners.SwipeDismissListViewTouchListener;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
@@ -38,7 +38,7 @@ import java.util.HashMap;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListener}
  * interface.
  */
 public class PrivateItemsFragment extends Fragment

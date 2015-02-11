@@ -1,7 +1,6 @@
 package com.titantech.wifibuddy.controllers;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentResolver;
@@ -23,6 +22,8 @@ import android.widget.Toast;
 
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.adapters.ScanItemsAdapter;
+import com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListener;
+import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;

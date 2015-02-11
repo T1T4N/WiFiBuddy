@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.shamanland.fab.FloatingActionButton;
 import com.titantech.wifibuddy.R;
+import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.models.User;
 import com.titantech.wifibuddy.models.Utils;

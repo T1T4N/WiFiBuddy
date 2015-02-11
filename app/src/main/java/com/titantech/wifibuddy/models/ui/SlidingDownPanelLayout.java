@@ -1,4 +1,4 @@
-package com.sothree.slidinguppanel;
+package com.titantech.wifibuddy.models.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;

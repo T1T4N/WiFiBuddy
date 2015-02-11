@@ -1,4 +1,4 @@
-package com.titantech.wifibuddy.controllers;
+package com.titantech.wifibuddy.controllers.listeners;
 /*
  * Copyright 2013 Google Inc.
  *

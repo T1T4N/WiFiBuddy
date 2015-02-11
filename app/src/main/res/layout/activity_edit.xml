@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/app_toolbar">
 
-        <com.sothree.slidinguppanel.SlidingDownPanelLayout
+        <com.titantech.wifibuddy.models.ui.SlidingDownPanelLayout
             android:id="@+id/slidingLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -165,6 +165,6 @@
 
                 </RelativeLayout>
             </RelativeLayout>
-        </com.sothree.slidinguppanel.SlidingDownPanelLayout>
+        </com.titantech.wifibuddy.models.ui.SlidingDownPanelLayout>
     </RelativeLayout>
 </RelativeLayout>
