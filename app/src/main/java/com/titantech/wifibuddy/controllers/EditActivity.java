@@ -2,6 +2,7 @@ package com.titantech.wifibuddy.controllers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Handler;
@@ -13,9 +14,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,6 +52,7 @@ public class EditActivity extends ActionBarActivity
     private SlidingDownPanelLayout mSlidingDownPanelLayout;
     private EditText mFieldName, mFieldBssid, mFieldPassword;
     private Spinner mFieldPrivacy;
+    private TextView mFieldLat, mFieldLon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +78,15 @@ public class EditActivity extends ActionBarActivity
 
         mSlidingDownPanelLayout = (SlidingDownPanelLayout) findViewById(R.id.slidingLayout);
         mSlidingDownPanelLayout.setPanelSlideListener(this);
+        mSlidingDownPanelLayout.setSliderFadeColor(Color.argb(128, 0, 0, 0));
         mSlidingDownPanelLayout.setParallaxDistance(100);
 
         mFieldName = (EditText)findViewById(R.id.edit_field_name);
         mFieldBssid = (EditText)findViewById(R.id.edit_field_bssid);
         mFieldPassword = (EditText)findViewById(R.id.edit_field_password);
         mFieldPrivacy = (Spinner)findViewById(R.id.edit_field_privacy);
+        mFieldLat = (TextView)findViewById(R.id.edit_field_latitude);
+        mFieldLon = (TextView)findViewById(R.id.edit_field_longitude);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.privacy_types, android.R.layout.simple_spinner_item);
@@ -90,6 +97,8 @@ public class EditActivity extends ActionBarActivity
         mFieldBssid.setText(mEditItem.getBssid());
         mFieldPassword.setText(mEditItem.getPassword());
         mFieldPrivacy.setSelection(mEditItem.getPrivacyType());
+        mFieldLat.setText(String.format("%.5f", mEditItem.getLatitude()));
+        mFieldLon.setText(String.format("%.5f", mEditItem.getLongitude()));
     }
 
     private void setupActionBar() {
@@ -176,6 +185,10 @@ public class EditActivity extends ActionBarActivity
 
                 mItemMarker.setDraggable(false);
                 mGoogleMap.getUiSettings().setScrollGesturesEnabled(false);
+
+                InputMethodManager inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.toggleSoftInputFromWindow(mFieldName.getWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+                mFieldName.requestFocus();
             }
         }, 500);
     }
@@ -227,5 +240,7 @@ public class EditActivity extends ActionBarActivity
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
+        mFieldLat.setText(String.format("%.5f", marker.getPosition().latitude));
+        mFieldLon.setText(String.format("%.5f", marker.getPosition().longitude));
     }
 }

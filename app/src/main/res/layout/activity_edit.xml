@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:windowSoftInputMode="stateVisible"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context="com.titantech.wifibuddy.controllers.EditActivity">
@@ -33,102 +34,136 @@
                 android:layout_marginTop="150dp"
                 android:background="@android:color/white"
                 >
-                <LinearLayout
-                    android:id="@+id/edit_layout_name"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:weightSum="1">
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="8dp">
+                    <LinearLayout
+                        android:id="@+id/edit_layout_name"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1">
+                        <TextView
+                            android:id="@+id/edit_label_name"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:labelFor="@+id/edit_field_name"
+                            android:text="AP Name:"
+                            android:textColor="@color/dark_grey"
+                            android:textSize="16sp"/>
+                        <EditText
+                            android:id="@+id/edit_field_name"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:inputType="text"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/edit_layout_bssid"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edit_layout_name"
+                        android:weightSum="1">
+                        <TextView
+                            android:id="@+id/edit_label_bssid"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:labelFor="@+id/edit_field_bssid"
+                            android:text="AP Id:"
+                            android:textColor="@color/dark_grey"
+                            android:textSize="16sp"/>
+                        <EditText
+                            android:id="@+id/edit_field_bssid"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:enabled="false"
+                            android:inputType="text"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/edit_layout_password"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edit_layout_bssid"
+                        android:weightSum="1">
+                        <TextView
+                            android:id="@+id/edit_label_password"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:labelFor="@+id/edit_field_password"
+                            android:text="Password"
+                            android:textColor="@color/dark_grey"
+                            android:textSize="16sp"/>
+                        <EditText
+                            android:id="@+id/edit_field_password"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:inputType="text"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/edit_layout_privacy"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edit_layout_password"
+                        android:weightSum="1">
+                        <TextView
+                            android:id="@+id/edit_label_privacy"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:labelFor="@+id/edit_field_password"
+                            android:text="Privacy"
+                            android:textColor="@color/dark_grey"
+                            android:textSize="16sp"/>
+                        <Spinner
+                            android:id="@+id/edit_field_privacy"
+                            android:layout_width="0px"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:textSize="16sp"
+                            />
+                    </LinearLayout>
                     <TextView
-                        android:id="@+id/edit_label_name"
-                        android:layout_width="0px"
+                        android:id="@+id/edit_label_latitude"
+
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight=".4"
-                        android:labelFor="@+id/edit_field_name"
-                        android:text="AP Name:"
-                        android:textColor="@color/dark_grey"
-                        android:textSize="16sp"/>
-                    <EditText
-                        android:id="@+id/edit_field_name"
-                        android:layout_width="0px"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".6"
-                        android:inputType="text"
-                        android:textSize="16sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/edit_layout_bssid"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/edit_layout_name"
-                    android:weightSum="1">
+                        android:layout_below="@id/edit_layout_privacy"
+                        android:text="Latitude: "/>
                     <TextView
-                        android:id="@+id/edit_label_bssid"
-                        android:layout_width="0px"
+                        android:id="@+id/edit_field_latitude"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight=".4"
-                        android:labelFor="@+id/edit_field_bssid"
-                        android:text="AP Id:"
-                        android:textColor="@color/dark_grey"
-                        android:textSize="16sp"/>
-                    <EditText
-                        android:id="@+id/edit_field_bssid"
-                        android:layout_width="0px"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".6"
-                        android:enabled="false"
-                        android:inputType="text"
-                        android:textSize="16sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/edit_layout_password"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/edit_layout_bssid"
-                    android:weightSum="1">
+                        android:layout_below="@id/edit_layout_privacy"
+                        android:layout_toEndOf="@id/edit_label_latitude"/>
                     <TextView
-                        android:id="@+id/edit_label_password"
-                        android:layout_width="0px"
+                        android:id="@+id/edit_label_longitude"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight=".4"
-                        android:labelFor="@+id/edit_field_password"
-                        android:text="Password"
-                        android:textColor="@color/dark_grey"
-                        android:textSize="16sp"/>
-                    <EditText
-                        android:id="@+id/edit_field_password"
-                        android:layout_width="0px"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".6"
-                        android:inputType="textPassword"
-                        android:textSize="16sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/edit_layout_privacy"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/edit_layout_password"
-                    android:weightSum="1">
+                        android:layout_below="@id/edit_label_latitude"
+                        android:text="Longitude: "/>
                     <TextView
-                        android:id="@+id/edit_label_privacy"
-                        android:layout_width="0px"
+                        android:id="@+id/edit_field_longitude"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight=".4"
-                        android:labelFor="@+id/edit_field_password"
-                        android:text="Privacy"
-                        android:textColor="@color/dark_grey"
-                        android:textSize="16sp"/>
-                    <Spinner
-                        android:id="@+id/edit_field_privacy"
-                        android:layout_width="0px"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".6"
-                        android:textSize="16sp"
-                        />
-                </LinearLayout>
+                        android:layout_below="@id/edit_label_latitude"
+                        android:layout_toEndOf="@id/edit_label_longitude"/>
+
+                </RelativeLayout>
             </RelativeLayout>
         </com.sothree.slidinguppanel.SlidingDownPanelLayout>
     </RelativeLayout>
