@@ -139,13 +139,14 @@
                     </LinearLayout>
                     <TextView
                         android:id="@+id/edit_label_latitude"
-
+                        android:layout_marginTop="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/edit_layout_privacy"
                         android:text="Latitude: "/>
                     <TextView
                         android:id="@+id/edit_field_latitude"
+                        android:layout_marginTop="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/edit_layout_privacy"

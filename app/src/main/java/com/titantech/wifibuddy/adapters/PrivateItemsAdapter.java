@@ -63,7 +63,9 @@ public class PrivateItemsAdapter extends CursorAdapter {
             if (mSectionFlags[position]) {
                 viewHolder.sectionHeader.setVisibility(View.VISIBLE);
                 viewHolder.sectionHeader.setText(mSectionNames.get(itemPrivacy));
+                //convertView.setMinimumHeight(convertView.getMeasuredHeight() + 16);
             } else {
+                //convertView.setMinimumHeight(convertView.getMeasuredHeight() - 16);
                 viewHolder.sectionHeader.setVisibility(View.GONE);
             }
         } catch (Exception ex) {
@@ -112,6 +114,7 @@ public class PrivateItemsAdapter extends CursorAdapter {
         if (newCursor != null) {
             mSectionFlags = new boolean[newCursor.getCount()];
 
+            newCursor.moveToPosition(-1);
             int prevType = -1;
             while (newCursor.moveToNext()) {
                 int cType = newCursor.getInt(newCursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY));
