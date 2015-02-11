@@ -94,7 +94,7 @@ public class WifiContentProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
-        // Uisng SQLiteQueryBuilder instead of query() method
+        // Using SQLiteQueryBuilder instead of query() method
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         Cursor cursor = null;
         // check if the caller has requested a column which does not exists
@@ -108,7 +108,7 @@ public class WifiContentProvider extends ContentProvider {
             case PUBLIC_SINGLE:
                 queryBuilder.setTables(WifiDbOpenHelper.TABLE_PUBLIC);
                 // adding the ID to the original query
-                queryBuilder.appendWhere(WifiDbOpenHelper.COLUMN_ID + "="
+                queryBuilder.appendWhere(WifiDbOpenHelper.INTERNAL_ID + "="
                     + uri.getLastPathSegment());
                 break;
 
@@ -146,7 +146,7 @@ public class WifiContentProvider extends ContentProvider {
                 break;
             case PRIVATE_SINGLE:
                 queryBuilder.setTables(WifiDbOpenHelper.TABLE_PRIVATE);
-                queryBuilder.appendWhere(WifiDbOpenHelper.COLUMN_ID + "="
+                queryBuilder.appendWhere(WifiDbOpenHelper.INTERNAL_ID + "="
                     + uri.getLastPathSegment());
                 break;
 
@@ -210,7 +210,7 @@ public class WifiContentProvider extends ContentProvider {
                 break;
             case PUBLIC_SINGLE:
                 id = uri.getLastPathSegment();
-                where = WifiDbOpenHelper.COLUMN_ID + "=" + id;
+                where = WifiDbOpenHelper.INTERNAL_ID + "=" + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }
@@ -223,7 +223,7 @@ public class WifiContentProvider extends ContentProvider {
                 break;
             case PRIVATE_SINGLE:
                 id = uri.getLastPathSegment();
-                where = WifiDbOpenHelper.COLUMN_ID + "=" + id;
+                where = WifiDbOpenHelper.INTERNAL_ID + "=" + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }
@@ -251,7 +251,7 @@ public class WifiContentProvider extends ContentProvider {
                 break;
             case PUBLIC_SINGLE:
                 id = uri.getLastPathSegment();
-                where = WifiDbOpenHelper.COLUMN_ID + "=" + id;
+                where = WifiDbOpenHelper.INTERNAL_ID + "=" + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " and " + selection;
                 }
@@ -262,7 +262,7 @@ public class WifiContentProvider extends ContentProvider {
                 break;
             case PRIVATE_SINGLE:
                 id = uri.getLastPathSegment();
-                where = WifiDbOpenHelper.COLUMN_ID + "=" + id;
+                where = WifiDbOpenHelper.INTERNAL_ID + "=" + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " and " + selection;
                 }

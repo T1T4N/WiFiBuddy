@@ -2,10 +2,8 @@ package com.titantech.wifibuddy.controllers;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shamanland.fab.FloatingActionButton;
-import com.titantech.wifibuddy.MainActivity;
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.models.User;
@@ -23,7 +20,7 @@ import com.titantech.wifibuddy.models.Utils;
 import com.titantech.wifibuddy.network.RestTask;
 import com.titantech.wifibuddy.network.ResultListener;
 import com.titantech.wifibuddy.network.requests.PutRestRequest;
-import com.titantech.wifibuddy.parsers.UserResultParser;
+import com.titantech.wifibuddy.parsers.UserPutParser;
 
 /**
  * Created by Robert on 24.01.2015.
@@ -151,7 +148,7 @@ public class ProfileFragment extends Fragment
             oldPassword
         );
 
-        RestTask<User> updateTask = new RestTask<User>(getActivity(), new UserResultParser(), new ResultListener<User>() {
+        RestTask<User> updateTask = new RestTask<User>(getActivity(), new UserPutParser(), new ResultListener<User>() {
             @Override
             public void onDownloadResult(User result) {
                 if (result.equals(User.nullUser())) {

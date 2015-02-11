@@ -3,6 +3,7 @@ package com.titantech.wifibuddy.controllers;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -28,9 +29,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingDownPanelLayout;
 import com.titantech.wifibuddy.R;
+import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
+import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.Utils;
+import com.titantech.wifibuddy.provider.WifiContentProvider;
+
+import java.util.Date;
 
 
 public class EditActivity extends ActionBarActivity
@@ -96,13 +102,39 @@ public class EditActivity extends ActionBarActivity
         }
     }
 
+    private void updateAccessPoint(){
+        int oldPrivacy = mEditItem.getPrivacyType();
+        mEditItem.setName(mFieldName.getText().toString());
+        mEditItem.setPassword(mFieldPassword.getText().toString());
+        mEditItem.setPrivacyType(mFieldPrivacy.getSelectedItemPosition());
+        mEditItem.setLatitude(mItemMarker.getPosition().latitude);
+        mEditItem.setLongitude(mItemMarker.getPosition().longitude);
+        mEditItem.setLastAccessed(new Date());
+
+        int newPrivacy = mEditItem.getPrivacyType();
+        if(oldPrivacy == newPrivacy) {
+            Uri updateUri = null;
+            if(newPrivacy == 1) {
+                updateUri = Uri.parse(WifiContentProvider.CONTENT_URI_PRIVATE + "/" + mEditItem.getInternalId());
+            } else {
+                updateUri = Uri.parse(WifiContentProvider.CONTENT_URI_PUBLIC + "/" + mEditItem.getInternalId());
+            }
+            UpdateManager.getInstance().queueUpdate(updateUri, mEditItem);
+        }
+        else {
+
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                Log.d("EDIT_HOME", "Home button pressed");
                 NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.action_save:
+                updateAccessPoint();
+                finish();
                 return true;
             case R.id.action_settings:
                 return true;
@@ -128,6 +160,7 @@ public class EditActivity extends ActionBarActivity
         );
 
         final Context ctx = this;
+        // Bug fix: Update camera after 500ms so the map tiles can initially load
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -6,12 +6,27 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Robert on 08.02.2015.
  */
 public class Utils {
     private static User mAuthenticatedUser;
 
+    @SuppressWarnings("SimpleDateFormat")
+    public static SimpleDateFormat datetime_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    public static Date long_ago;
+
+    static {
+        try {
+            long_ago = datetime_format.parse("1999-01-01T01:01:01");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
     public static boolean isInternetAvailable(Context context) {
         ConnectivityManager cm =
             (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

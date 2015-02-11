@@ -124,6 +124,7 @@ public class ScanItemsFragment extends Fragment
         if (!resPrivate.isAfterLast()) { //found
             resPrivate.moveToNext();
             AccessPoint ap = new AccessPoint(
+                resPrivate.getInt(resPrivate.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
                 resPrivate.getString(resPrivate.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
                 resPrivate.getString(resPrivate.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
                 "You",
@@ -151,6 +152,7 @@ public class ScanItemsFragment extends Fragment
             if (!resPublic.isAfterLast()) { //found
                 resPublic.moveToNext();
                 AccessPoint ap = new AccessPoint(
+                    resPublic.getInt(resPublic.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
                     resPublic.getString(resPublic.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
                     resPublic.getString(resPublic.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
                     resPublic.getString(resPublic.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER_MAIL)),

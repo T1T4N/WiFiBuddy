@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.titantech.wifibuddy.controllers.*;
 import com.titantech.wifibuddy.models.Constants;
+import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.User;
 import com.titantech.wifibuddy.models.Utils;
 
@@ -58,6 +59,7 @@ public class MainActivity extends ActionBarActivity
         } else {
             if (Utils.getAuthenticatedUser() == null)
                 Utils.setAuthenticatedUser(this, usr);
+            UpdateManager.setupInstance(getApplicationContext());
 
             setContentView(R.layout.activity_main);
 

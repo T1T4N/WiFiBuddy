@@ -249,8 +249,10 @@ public class PrivateItemsFragment extends Fragment
         Cursor c = (Cursor) mAdapterPrivate.getItem(position);
 
         AccessPoint ap = new AccessPoint(
+            c.getInt(c.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
             c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
             c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
+            null,
             c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_BSSID)),
             c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)),
             c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)),

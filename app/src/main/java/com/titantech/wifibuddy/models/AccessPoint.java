@@ -6,8 +6,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,6 +13,7 @@ import java.util.Date;
  * Created by Robert on 23.01.2015.
  */
 public class AccessPoint implements Parcelable {
+    private int internalId;
     private String id;
     private String publisherId;
     private String publisherMail;
@@ -27,19 +26,24 @@ public class AccessPoint implements Parcelable {
     private double longitude;
     private Date lastAccessed;
 
-    @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
     public AccessPoint(String id, String publisherId, String bssid, String name,
                        String password, String securityType, int privacyType,
                        double latitude, double longitude, String lastAccessed) {
-        this(id, publisherId, null, bssid, name, password,
+        this(-1, id, publisherId, null, bssid, name, password,
             securityType, privacyType, latitude, longitude, lastAccessed);
     }
 
     public AccessPoint(String id, String publisherId, String publisherMail, String bssid, String name,
                        String password, String securityType, int privacyType,
                        double latitude, double longitude, String lastAccessed) {
+        this(-1, id, publisherId, publisherMail, bssid, name, password,
+            securityType, privacyType, latitude, longitude, lastAccessed);
+    }
+
+    public AccessPoint(int internalId, String id, String publisherId, String publisherMail, String bssid, String name,
+                       String password, String securityType, int privacyType,
+                       double latitude, double longitude, String lastAccessed) {
+        this.internalId = internalId;
         this.id = id;
         this.publisherId = publisherId;
         this.publisherMail = publisherMail;
@@ -54,6 +58,7 @@ public class AccessPoint implements Parcelable {
     }
 
     public AccessPoint(Parcel parc) {
+        this.internalId = parc.readInt();
         this.id = parc.readString();
         this.publisherId = parc.readString();
         this.publisherMail = parc.readString();
@@ -83,7 +88,7 @@ public class AccessPoint implements Parcelable {
         values.put(WifiDbOpenHelper.COLUMN_PRIVACY, this.privacyType);
         values.put(WifiDbOpenHelper.COLUMN_LAT, this.latitude);
         values.put(WifiDbOpenHelper.COLUMN_LON, this.longitude);
-        values.put(WifiDbOpenHelper.COLUMN_LASTACCESS, format.format(this.lastAccessed));
+        values.put(WifiDbOpenHelper.COLUMN_LASTACCESS, Utils.datetime_format.format(this.lastAccessed));
 
         return values;
     }
@@ -91,11 +96,48 @@ public class AccessPoint implements Parcelable {
     private Date parseDate(String date) {
         Date ret = null;
         try {
-            ret = format.parse(date);
+            ret = Utils.datetime_format.parse(date);
         } catch (Exception e) {
             e.printStackTrace();
+            ret = new Date();
         }
         return ret;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getInternalId() {
+        return internalId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setPrivacyType(int privacyType) {
+        this.privacyType = privacyType;
+    }
+
+    public void setSecurityType(String securityType) {
+        this.securityType = securityType;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLastAccessed(Date lastAccessed) {
+        this.lastAccessed = lastAccessed;
     }
 
     public String getPublisherMail() {
@@ -157,6 +199,7 @@ public class AccessPoint implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.internalId);
         dest.writeString(this.id);
         dest.writeString(this.publisherId);
         dest.writeString(this.publisherMail);
@@ -167,6 +210,6 @@ public class AccessPoint implements Parcelable {
         dest.writeInt(this.privacyType);
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
-        dest.writeString(format.format(this.lastAccessed));
+        dest.writeString(Utils.datetime_format.format(this.lastAccessed));
     }
 }

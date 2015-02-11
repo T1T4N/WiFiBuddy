@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.adapters.PublicItemsAdapter;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
+import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 import com.titantech.wifibuddy.service.IntentFactory;

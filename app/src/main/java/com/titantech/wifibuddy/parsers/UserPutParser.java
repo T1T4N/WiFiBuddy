@@ -12,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserResultParser implements ResultParser<User> {
+public class UserPutParser implements ResultParser<User> {
     @Override
     public User parseResult(String content) throws JSONException {
         User ret = null;

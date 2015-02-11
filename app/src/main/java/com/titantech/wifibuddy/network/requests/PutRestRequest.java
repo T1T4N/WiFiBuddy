@@ -12,8 +12,8 @@ import java.util.Map;
  */
 
 public class PutRestRequest extends RestRequest {
-    public PutRestRequest(String requestUrl, Map<String, String> postData) {
-        this(requestUrl, postData, null, null, 1000);
+    public PutRestRequest(String requestUrl, Map<String, String> putData) {
+        this(requestUrl, putData, null, null, 1000);
     }
 
     public PutRestRequest(String requestUrl, Map<String, String> putData, String authUsername, String authPassword) {
