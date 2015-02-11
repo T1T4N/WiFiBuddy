@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -92,7 +90,8 @@ public class EditActivity extends ActionBarActivity
         Toolbar mToolbar = (Toolbar) findViewById(R.id.app_toolbar);
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mToolbar.setNavigationIcon(R.drawable.ic_menu_close);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
     }
@@ -102,6 +101,7 @@ public class EditActivity extends ActionBarActivity
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                Log.d("EDIT_HOME", "Home button pressed");
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.action_settings:
