@@ -27,11 +27,11 @@ public class UpdateManager {
     private Date mLastUpdate;
     private Context mApplicationContext;
 
-    private UpdateManager(Context applicationContext){
+    private UpdateManager(Context applicationContext) {
         mApplicationContext = applicationContext;
         mPreferences = applicationContext.getSharedPreferences(Constants.PREFS_NAME, Activity.MODE_PRIVATE);
         String lastUpdate = mPreferences.getString(Constants.PREFS_KEY_LAST_UPDATE, null);
-        if(lastUpdate != null){
+        if (lastUpdate != null) {
             try {
                 mLastUpdate = Utils.datetime_format.parse(lastUpdate);
             } catch (ParseException e) {
@@ -42,26 +42,28 @@ public class UpdateManager {
         }
         readPreviousUpdates();
     }
-    public static void setupInstance(Context applicationContext){
-        if(instance == null) {
-            synchronized(UpdateManager.class) {
+
+    public static void setupInstance(Context applicationContext) {
+        if (instance == null) {
+            synchronized (UpdateManager.class) {
                 instance = new UpdateManager(applicationContext);
             }
         }
     }
-    public static UpdateManager getInstance() throws RuntimeException{
-        if(instance == null) {
+
+    public static UpdateManager getInstance() throws RuntimeException {
+        if (instance == null) {
             throw new RuntimeException("The UpdateManager is not initialized");
         }
         return instance;
     }
 
-    private void readPreviousUpdates(){
+    private void readPreviousUpdates() {
         try {
             FileInputStream fis = mApplicationContext.openFileInput(Constants.FILENAME_UPDATES);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String line = null;
-            while((line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 //TODO: Read saved updates in there was no internet connection to send them to the server
             }
             br.close();
@@ -77,25 +79,41 @@ public class UpdateManager {
         }
     }
 
-    public boolean shouldUpdate(String timeNow) throws ParseException{
+    public boolean shouldUpdate(String timeNow) throws ParseException {
         return shouldUpdate(Utils.datetime_format.parse(timeNow));
     }
-    public  boolean shouldUpdate(Date timeNow){
+
+    public boolean shouldUpdate(Date timeNow) {
         long diff = timeNow.getTime() - mLastUpdate.getTime();
         long diffMinutes = diff / (60 * 1000) % 60;
         return diffMinutes > 60;
     }
 
-    public void queueInsert(AccessPoint ap){
+    public void queueInsert(AccessPoint ap) {
 
     }
-    public void queueUpdate(Uri updateUri, AccessPoint changedAp) {
+
+    public void queueUpdate(AccessPoint changedAp) {
         // Update local database
-        mApplicationContext.getContentResolver().update(updateUri, changedAp.toContentValues(), null, null);
-        if(Utils.isInternetAvailable(mApplicationContext)){
+        mApplicationContext.getContentResolver()
+            .update(changedAp.getContentUriFromPrivacy(), changedAp.toContentValues(), null, null);
+
+        if (Utils.isInternetAvailable(mApplicationContext)) {
             // Perform server update right away
             // TODO: Register Broadcast Receiver to get result status
             mApplicationContext.startService(IntentFactory.putItem(mApplicationContext, changedAp));
+        } else {
+            // TODO: Save update locally if it cannot be sent to the server immediately
+        }
+    }
+
+    public void queueDelete(AccessPoint deletedAp) {
+        mApplicationContext.getContentResolver()
+            .delete(deletedAp.getContentUriFromPrivacy(), null, null);
+        if (Utils.isInternetAvailable(mApplicationContext)) {
+            // Perform server update right away
+            // TODO: Register Broadcast Receiver to get result status
+            //mApplicationContext.startService(IntentFactory.deleteItem(mApplicationContext, deletedAp));
         } else {
             // TODO: Save update locally if it cannot be sent to the server immediately
         }

@@ -4,21 +4,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.Fragment;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
@@ -27,8 +21,6 @@ import android.widget.Toast;
 
 
 import com.shamanland.fab.FloatingActionButton;
-import com.shamanland.fab.ShowHideOnScroll;
-import com.titantech.wifibuddy.MainActivity;
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.adapters.PrivateItemsAdapter;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
@@ -52,6 +44,7 @@ import java.util.HashMap;
 public class PrivateItemsFragment extends Fragment
     implements AdapterView.OnItemLongClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String TAG = "PRIVATE_FRAGMENT";
     private OnFragmentInteractionListener mListener;
     private SectionChangedListener mSectionChangedListener;
     private HashMap<Integer, String> mSectionTitles;
@@ -65,7 +58,7 @@ public class PrivateItemsFragment extends Fragment
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private CursorAdapter mAdapterPrivate;
+    private PrivateItemsAdapter mAdapterPrivate;
 
     // TODO: Rename and change types of parameters
     public static PrivateItemsFragment newInstance(int position) {
@@ -126,6 +119,7 @@ public class PrivateItemsFragment extends Fragment
             mAdapterPrivate = new PrivateItemsAdapter(getActivity(), null, mSectionTitles);
             mListViewPrivate.setAdapter(mAdapterPrivate);
 
+            final LoaderManager.LoaderCallbacks<Cursor> callbacks = this;
             mSwipeDismissListener = new SwipeDismissListViewTouchListener(
                 mListViewPrivate, new SwipeDismissListViewTouchListener.DismissCallbacks() {
                 @Override
@@ -136,12 +130,10 @@ public class PrivateItemsFragment extends Fragment
                 @Override
                 public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                     for (int position : reverseSortedPositions) {
-                        Toast.makeText(getActivity(), "Remove " + String.valueOf(position), Toast.LENGTH_SHORT).show();
-                        Object a = mAdapterPrivate.getItem(position);
-
-                        //mAdapterPrivate.remove(adapter.getItem(position));
+                        Log.d(TAG, "Remove " + String.valueOf(position));
+                        mAdapterPrivate.remove(position);
                     }
-                    // mAdapterPrivate.notifyDataSetChanged();
+                    //getLoaderManager().restartLoader(Constants.LOADER_PRIVATE_ID, null, callbacks);
                 }
             }
             );
@@ -153,7 +145,7 @@ public class PrivateItemsFragment extends Fragment
 
             mListViewPrivate.setOnItemLongClickListener(this);
         } catch (Exception ex) {
-            Log.e("CURSOR_ERROR", "Error onCreateView");
+            Log.e(TAG, "CURSOR_ERROR: Error onCreateView");
             ex.printStackTrace();
         }
         return view;
@@ -209,7 +201,7 @@ public class PrivateItemsFragment extends Fragment
                     WifiDbOpenHelper.COLUMN_NAME + " ASC"
             );
         } catch (Exception ex) {
-            Log.e("CURSOR_ERROR", "Error onCreateLoader");
+            Log.e(TAG, "CURSOR_ERROR: Error onCreateLoader");
             ex.printStackTrace();
             return null;
         }
@@ -220,7 +212,7 @@ public class PrivateItemsFragment extends Fragment
         try {
             mAdapterPrivate.swapCursor(data);
         } catch (Exception ex) {
-            Log.e("CURSOR_ERROR", "Error onLoadFinished");
+            Log.e(TAG, "CURSOR_ERROR: Error onLoadFinished");
             ex.printStackTrace();
         }
     }
@@ -230,7 +222,7 @@ public class PrivateItemsFragment extends Fragment
         try {
             mAdapterPrivate.swapCursor(null);
         } catch (Exception ex) {
-            Log.e("CURSOR_ERROR", "Error onLoaderReset");
+            Log.e(TAG, "CURSOR_ERROR: Error onLoaderReset");
             ex.printStackTrace();
         }
     }
@@ -239,7 +231,7 @@ public class PrivateItemsFragment extends Fragment
         try {
             getLoaderManager().initLoader(Constants.LOADER_PRIVATE_ID, null, this);
         } catch (Exception ex) {
-            Log.e("CURSOR_ERROR", "Error initLoader");
+            Log.e(TAG, "CURSOR_ERROR: Error initLoader");
             ex.printStackTrace();
         }
     }

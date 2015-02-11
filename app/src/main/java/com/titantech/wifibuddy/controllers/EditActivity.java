@@ -71,7 +71,7 @@ public class EditActivity extends ActionBarActivity
         setupInterface();
     }
 
-    private void setupInterface(){
+    private void setupInterface() {
         MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map_edit);
         mapFragment.getMapAsync(this);
@@ -81,12 +81,12 @@ public class EditActivity extends ActionBarActivity
         mSlidingDownPanelLayout.setSliderFadeColor(Color.argb(128, 0, 0, 0));
         mSlidingDownPanelLayout.setParallaxDistance(100);
 
-        mFieldName = (EditText)findViewById(R.id.edit_field_name);
-        mFieldBssid = (EditText)findViewById(R.id.edit_field_bssid);
-        mFieldPassword = (EditText)findViewById(R.id.edit_field_password);
-        mFieldPrivacy = (Spinner)findViewById(R.id.edit_field_privacy);
-        mFieldLat = (TextView)findViewById(R.id.edit_field_latitude);
-        mFieldLon = (TextView)findViewById(R.id.edit_field_longitude);
+        mFieldName = (EditText) findViewById(R.id.edit_field_name);
+        mFieldBssid = (EditText) findViewById(R.id.edit_field_bssid);
+        mFieldPassword = (EditText) findViewById(R.id.edit_field_password);
+        mFieldPrivacy = (Spinner) findViewById(R.id.edit_field_privacy);
+        mFieldLat = (TextView) findViewById(R.id.edit_field_latitude);
+        mFieldLon = (TextView) findViewById(R.id.edit_field_longitude);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.privacy_types, android.R.layout.simple_spinner_item);
@@ -111,7 +111,7 @@ public class EditActivity extends ActionBarActivity
         }
     }
 
-    private void updateAccessPoint(){
+    private void updateAccessPoint() {
         int oldPrivacy = mEditItem.getPrivacyType();
         mEditItem.setName(mFieldName.getText().toString());
         mEditItem.setPassword(mFieldPassword.getText().toString());
@@ -121,19 +121,13 @@ public class EditActivity extends ActionBarActivity
         mEditItem.setLastAccessed(new Date());
 
         int newPrivacy = mEditItem.getPrivacyType();
-        if(oldPrivacy == newPrivacy) {
-            Uri updateUri = null;
-            if(newPrivacy == 1) {
-                updateUri = Uri.parse(WifiContentProvider.CONTENT_URI_PRIVATE + "/" + mEditItem.getInternalId());
-            } else {
-                updateUri = Uri.parse(WifiContentProvider.CONTENT_URI_PUBLIC + "/" + mEditItem.getInternalId());
-            }
-            UpdateManager.getInstance().queueUpdate(updateUri, mEditItem);
-        }
-        else {
+        if (oldPrivacy == newPrivacy) {
+            UpdateManager.getInstance().queueUpdate(mEditItem);
+        } else {
 
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -186,7 +180,7 @@ public class EditActivity extends ActionBarActivity
                 mItemMarker.setDraggable(false);
                 mGoogleMap.getUiSettings().setScrollGesturesEnabled(false);
 
-                InputMethodManager inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.toggleSoftInputFromWindow(mFieldName.getWindowToken(), InputMethodManager.SHOW_FORCED, 0);
                 mFieldName.requestFocus();
             }

@@ -256,6 +256,9 @@ public class WifiContentProvider extends ContentProvider {
                     where += " and " + selection;
                 }
                 rowsDeleted = db.delete(WifiDbOpenHelper.TABLE_PUBLIC, where, null);
+
+                // Bug fix: notify PrivateItemsFragment of change
+                uri = Uri.parse(CONTENT_URI_PRIVATE + "/" + id);
                 break;
             case PRIVATE_MULTIPLE:
                 rowsDeleted = db.delete(WifiDbOpenHelper.TABLE_PRIVATE, selection, selectionArgs);

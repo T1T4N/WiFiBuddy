@@ -2,10 +2,13 @@ package com.titantech.wifibuddy.models;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
+import com.titantech.wifibuddy.provider.WifiContentProvider;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -104,6 +107,13 @@ public class AccessPoint implements Parcelable {
         return ret;
     }
 
+    public Uri getContentUriFromPrivacy(){
+        if(privacyType == 1) {
+            return Uri.parse(WifiContentProvider.CONTENT_URI_PRIVATE + "/" + internalId);
+        } else {
+            return Uri.parse(WifiContentProvider.CONTENT_URI_PUBLIC + "/" + internalId);
+        }
+    }
     public String getId() {
         return id;
     }

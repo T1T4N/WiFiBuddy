@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
+import com.titantech.wifibuddy.models.AccessPoint;
+import com.titantech.wifibuddy.models.UpdateManager;
 
 import java.util.Map;
 
@@ -18,6 +20,7 @@ import java.util.Map;
  * Created by Robert on 25.01.2015.
  */
 public class PrivateItemsAdapter extends CursorAdapter {
+    private static final String TAG = "PRIVATE_ADAPTER";
     private LayoutInflater mInflater;
     private boolean[] mSectionFlags;
     private Map<Integer, String> mSectionNames;
@@ -26,40 +29,14 @@ public class PrivateItemsAdapter extends CursorAdapter {
         super(context, c);
         this.mInflater = LayoutInflater.from(context);
         this.mSectionNames = sectionNames;
-
-        if (c != null) {
-            mSectionFlags = new boolean[c.getCount()];
-
-            int prevType = -1;
-            while (c.moveToNext()) {
-                int cType = c.getInt(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY));
-                if (cType != prevType) {
-                    mSectionFlags[c.getPosition()] = true;
-                }
-                prevType = cType;
-            }
-            c.moveToFirst();
-        }
+        buildSectionFlags(c);
     }
 
     public PrivateItemsAdapter(Context context, Cursor c, boolean autoRequery, Map<Integer, String> sectionNames) {
         super(context, c, autoRequery);
         this.mInflater = LayoutInflater.from(context);
         this.mSectionNames = sectionNames;
-
-        if (c != null) {
-            mSectionFlags = new boolean[c.getCount()];
-
-            int prevType = -1;
-            while (c.moveToNext()) {
-                int cType = c.getInt(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY));
-                if (cType != prevType) {
-                    mSectionFlags[c.getPosition()] = true;
-                }
-                prevType = cType;
-            }
-            c.moveToFirst();
-        }
+        buildSectionFlags(c);
     }
 
     @Override
@@ -90,7 +67,7 @@ public class PrivateItemsAdapter extends CursorAdapter {
                 viewHolder.sectionHeader.setVisibility(View.GONE);
             }
         } catch (Exception ex) {
-            Log.d("SECTION_ERROR", "Array out of bounds " + position + ": " + mSectionFlags.length);
+            Log.d(TAG, "SECTION_ERROR: Array out of bounds " + position + ": " + mSectionFlags.length);
         }
 
         viewHolder.apName.setText(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)));
@@ -126,6 +103,12 @@ public class PrivateItemsAdapter extends CursorAdapter {
 
     @Override
     public Cursor swapCursor(Cursor newCursor) {
+        Log.d(TAG, "Swapping adapter cursor");
+        buildSectionFlags(newCursor);
+        return super.swapCursor(newCursor);
+    }
+
+    private void buildSectionFlags(Cursor newCursor) {
         if (newCursor != null) {
             mSectionFlags = new boolean[newCursor.getCount()];
 
@@ -139,9 +122,33 @@ public class PrivateItemsAdapter extends CursorAdapter {
             }
             newCursor.moveToFirst();
         }
-        return super.swapCursor(newCursor);
     }
 
+    public void remove(int position){
+        try {
+            Cursor c = (Cursor) getItem(position);
+            AccessPoint ap = new AccessPoint(
+                c.getInt(c.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
+                null,
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_BSSID)),
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)),
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)),
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_SECURITY)),
+                c.getInt(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY)),
+                c.getDouble(c.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
+                c.getDouble(c.getColumnIndex(WifiDbOpenHelper.COLUMN_LON)),
+                c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_LASTACCESS))
+            );
+
+            UpdateManager.getInstance().queueDelete(ap);
+            notifyDataSetChanged();
+        } catch(Exception ex){
+            Log.e(TAG, "Error on remove");
+            ex.printStackTrace();
+        }
+    }
     private static class ViewHolder {
         TextView sectionHeader;
         TextView apName;
