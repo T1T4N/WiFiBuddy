@@ -4,7 +4,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="@dimen/tile_height_3row">
     <TextView
-        android:id="@+id/section_header_private"
+        android:id="@+id/private_section_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -17,43 +17,59 @@
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/lTitle_private"
+        android:id="@+id/private_field_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/section_header_private"
+        android:layout_below="@id/private_section_header"
         android:layout_alignParentStart="true"
         android:layout_marginTop="@dimen/tile_padding_top_3row"
-        android:layout_marginLeft="@dimen/tile_padding_side"
-        android:layout_marginRight="@dimen/tile_padding_side"
+        android:layout_marginStart="@dimen/tile_padding_side"
+        android:layout_marginEnd="@dimen/tile_padding_side"
         android:text="@string/placeholder_text"
         android:textSize="16sp"
         android:textColor="@android:color/black"/>
 
     <TextView
-        android:id="@+id/lSubtitle_private"
-        android:layout_width="match_parent"
+        android:id="@+id/private_label_password"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lTitle_private"
+        android:layout_below="@+id/private_field_name"
         android:layout_alignParentStart="true"
-
         android:layout_marginLeft="@dimen/tile_padding_side"
         android:layout_marginRight="@dimen/tile_padding_side"
-
-        android:text="@string/placeholder_text"/>
+        android:text="@string/label_password"
+        android:textSize="14sp"/>
+    <TextView
+        android:id="@+id/private_field_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/private_field_name"
+        android:layout_toEndOf="@id/private_label_password"
+        android:layout_marginStart="@dimen/tile_padding_small"
+        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:text="@string/placeholder_text"
+        android:textSize="14sp"/>
 
     <TextView
-        android:id="@+id/lSubtitle2_private"
-        android:layout_width="match_parent"
+        android:id="@+id/private_label_updated"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/tile_padding_side"
-        android:layout_marginRight="@dimen/tile_padding_side"
-        android:layout_below="@+id/lSubtitle_private"
-
-        android:paddingBottom="@dimen/tile_padding_bottom"
-
-        android:text="@string/placeholder_text"
-        android:textSize="14sp"
-        android:textColor="#ff2e2e2e"
-        android:layout_alignParentStart="true"/>
+        android:layout_marginStart="@dimen/tile_padding_side"
+        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:layout_marginBottom="@dimen/tile_padding_bottom"
+        android:layout_below="@id/private_label_password"
+        android:text="@string/label_updated"
+        android:textSize="14sp"/>
+    <TextView
+        android:id="@+id/private_field_updated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:layout_marginBottom="@dimen/tile_padding_bottom"
+        android:layout_alignStart="@id/edit_field_password"
+        android:layout_below="@id/private_label_password"
+        android:layout_toEndOf="@id/private_label_updated"
+        android:text="@string/label_updated"
+        android:textSize="14sp"/>
 
 </RelativeLayout>

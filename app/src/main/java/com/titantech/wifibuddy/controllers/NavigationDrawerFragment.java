@@ -70,7 +70,7 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 1;
+    private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -268,12 +268,12 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
+        /*
         if (item.getItemId() == R.id.action_example) {
             Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
             return true;
         }
-
+        */
         return super.onOptionsItemSelected(item);
     }
 
@@ -371,10 +371,14 @@ public class NavigationDrawerFragment extends Fragment {
                 // Heavy operation, could cause OutOfMemory
                 holder.imgIcon.setImageResource(item.icon);
             }
-            if (position == mSelectedPosition)
+            if (position == mSelectedPosition) {
                 holder.imgIcon.setColorFilter(getResources().getColor(R.color.colorPrimary));
-            else holder.imgIcon.setColorFilter(null);
-
+                row.setBackgroundColor(getResources().getColor(R.color.very_light_grey));
+            }
+            else {
+                holder.imgIcon.setColorFilter(null);
+                row.setBackgroundResource(0);
+            }
             return row;
         }
 

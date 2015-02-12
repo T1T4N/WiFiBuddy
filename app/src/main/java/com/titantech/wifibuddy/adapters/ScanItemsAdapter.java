@@ -1,5 +1,6 @@
 package com.titantech.wifibuddy.adapters;
 
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.nfc.Tag;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,39 +65,67 @@ public class ScanItemsAdapter extends BaseAdapter
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //TODO: Add information icon if BSSID/Name different, but the other parameter OK
-        //Router change vs Network name change
         ViewHolder viewHolder;
         if (convertView == null) {
             convertView = this.mInflater.inflate(R.layout.item_scan, null);
 
             viewHolder = new ViewHolder();
-            viewHolder.apName = (TextView) convertView.findViewById(R.id.lTitle_scan);
-            viewHolder.apPassword = (TextView) convertView.findViewById(R.id.lSubtitle_scan);
-            viewHolder.apPublisher = (TextView) convertView.findViewById(R.id.lSubtitle2_scan);
+            viewHolder.apName = (TextView) convertView.findViewById(R.id.scan_field_name);
+            viewHolder.apPassword = (TextView) convertView.findViewById(R.id.scan_field_password);
+            viewHolder.apPublisher = (TextView) convertView.findViewById(R.id.scan_field_publisher);
+            viewHolder.apInfo = (ImageView) convertView.findViewById(R.id.scan_icon_info);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-
-        AccessPoint ap = mItems.get(position).mAccessPoint;
+        final QueryResult item = mItems.get(position);
+        AccessPoint ap = item.mAccessPoint;
         viewHolder.apName.setText(ap.getName());
         viewHolder.apPassword.setText(ap.getPassword());
         viewHolder.apPublisher.setText(ap.getPublisherMail());
 
+        if(item.isBssidDifferent || item.isNameDifferent){
+            viewHolder.apInfo.setVisibility(View.VISIBLE);
+            viewHolder.apInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String msg = "";
+                    if(item.isBssidDifferent){
+                        msg = mContext.getString(R.string.scan_bssid_different);
+                    } else if (item.isNameDifferent){
+                        msg = mContext.getString(R.string.scan_name_different);
+                    }
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            viewHolder.apInfo.setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        AccessPoint ap = mItems.get(position).mAccessPoint;
+        QueryResult item = mItems.get(position);
+        AccessPoint ap = item.mAccessPoint;
         Log.d("WIFI", "trying to connect");
 
-        //TODO: Connect to a network using the same parameter, and the different one taken from the scan
-        // setup a wifi configuration
+        String bssid = ap.getBssid();
+        String ssid = ap.getName();
+        if(!item.isNameDifferent && item.isBssidDifferent){
+            bssid = item.mScanBssid;
+        }
+        if(!item.isBssidDifferent && item.isNameDifferent){
+            ssid = item.mScanName;
+        }
+        if(item.isBssidDifferent && item.isNameDifferent){
+            Log.e("SCAN_ADAPTER", "ERROR: Item's BSSID and Name are BOTH different");
+        }
+
         WifiConfiguration wc = new WifiConfiguration();
-        wc.BSSID = ap.getBssid();
-        wc.SSID = "\"" + ap.getName() + "\"";
+        wc.BSSID = bssid;
+        wc.SSID = "\"" + ssid + "\"";
+        // TODO: WEP Keys implementation ?
         wc.preSharedKey = "\"" + ap.getPassword() + "\"";
 
         wc.status = WifiConfiguration.Status.ENABLED;
@@ -180,5 +211,6 @@ public class ScanItemsAdapter extends BaseAdapter
         TextView apName;
         TextView apPassword;
         TextView apPublisher;
+        ImageView apInfo;
     }
 }
