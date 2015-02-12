@@ -370,7 +370,9 @@ public class SwipeDismissListViewTouchListener implements View.OnTouchListener {
                         pendingDismiss.view.setAlpha(1f);
                         pendingDismiss.view.setTranslationX(0);
                         lp = pendingDismiss.view.getLayoutParams();
-                        lp.height = originalHeight;
+
+                        // Bug fix: Using WRAP_CONTENT for proper height of the following listview items
+                        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;//originalHeight;
                         pendingDismiss.view.setLayoutParams(lp);
                     }
 

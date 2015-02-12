@@ -7,12 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.UpdateManager;
+import com.titantech.wifibuddy.models.Utils;
 
 import java.util.Map;
 
@@ -63,9 +65,7 @@ public class PrivateItemsAdapter extends CursorAdapter {
             if (mSectionFlags[position]) {
                 viewHolder.sectionHeader.setVisibility(View.VISIBLE);
                 viewHolder.sectionHeader.setText(mSectionNames.get(itemPrivacy));
-                //convertView.setMinimumHeight(convertView.getMeasuredHeight() + 16);
             } else {
-                //convertView.setMinimumHeight(convertView.getMeasuredHeight() - 16);
                 viewHolder.sectionHeader.setVisibility(View.GONE);
             }
         } catch (Exception ex) {

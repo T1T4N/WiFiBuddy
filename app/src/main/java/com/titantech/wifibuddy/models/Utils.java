@@ -59,4 +59,8 @@ public class Utils {
         float density = context.getResources().getDisplayMetrics().density;
         return (int) (dp*density + 0.5f);
     }
+    public static int pxToDp(Context context, int px){
+        float density = context.getResources().getDisplayMetrics().density;
+        return (int) (px/density);
+    }
 }
