@@ -1,5 +1,6 @@
 package com.titantech.wifibuddy.controllers;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -51,11 +52,12 @@ public class ProfileFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /*
         if (getArguments() != null) {
             // mParam1 = getArguments().getString(ARG_PARAM1);
             // mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        */
         mFabClicked = false;
     }
 
@@ -93,7 +95,14 @@ public class ProfileFragment extends Fragment
     @Override
     public void onClick(View v) {
         if (!mFabClicked) {
+            ObjectAnimator anim = ObjectAnimator.ofInt(mFloatingButton, "imageAlpha", 255, 0);
+            anim.setDuration(150);
+            anim.start();
             mFloatingButton.setImageResource(R.drawable.ic_done);
+            ObjectAnimator anim2 = ObjectAnimator.ofInt(mFloatingButton, "imageAlpha", 0, 255);
+            anim2.setDuration(150);
+            anim2.start();
+
             mSectionRepeat1.setVisibility(View.VISIBLE);
             mSectionRepeat2.setVisibility(View.VISIBLE);
 
@@ -111,7 +120,13 @@ public class ProfileFragment extends Fragment
                 String oldPassword = mFieldPasswordCurrent.getText().toString();
                 String newPassword = mFieldRepeat1.getText().toString();
 
+                ObjectAnimator anim = ObjectAnimator.ofInt(mFloatingButton, "imageAlpha", 255, 0);
+                anim.setDuration(150);
+                anim.start();
                 mFloatingButton.setImageResource(R.drawable.ic_create);
+                ObjectAnimator anim2 = ObjectAnimator.ofInt(mFloatingButton, "imageAlpha", 0, 255);
+                anim2.setDuration(150);
+                anim2.start();
 
                 mFieldRepeat1.setEnabled(false);
                 mFieldRepeat2.setEnabled(false);
