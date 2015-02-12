@@ -28,20 +28,15 @@ import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 import com.titantech.wifibuddy.service.IntentFactory;
 
-/**
- * Created by Robert on 25.01.2015.
- */
 public class PublicItemsFragment extends Fragment
     implements AbsListView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private OnFragmentInteractionListener mListener;
     private SectionChangedListener mSectionChangedListener;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private AbsListView mListView;
     private CursorAdapter mAdapter;
 
-    // TODO: Rename and change types of parameters
     public static PublicItemsFragment newInstance(int position) {
         PublicItemsFragment fragment = new PublicItemsFragment();
         Bundle args = new Bundle();
@@ -107,7 +102,6 @@ public class PublicItemsFragment extends Fragment
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
             mSectionChangedListener = (SectionChangedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -119,18 +113,13 @@ public class PublicItemsFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            //TODO: Private item OnClick
-            //mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
-        }
+        // Notify the active callbacks interface (the activity, if the
+        // fragment is attached to one) that an item has been selected.
     }
 
     /**

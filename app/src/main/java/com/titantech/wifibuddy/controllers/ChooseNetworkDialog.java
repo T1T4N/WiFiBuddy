@@ -38,8 +38,10 @@ public class ChooseNetworkDialog  extends DialogFragment
         implements AdapterView.OnItemClickListener, LocationListener {
     private ChooseItemsAdapter mAdapter;
     private WifiManager mWifiManager;
+    private LocationManager mLocationManager;
     private ListView mListNetworks;
     private double mLatitude, mLongitude;
+
     public ChooseNetworkDialog () {
     }
 
@@ -87,16 +89,16 @@ public class ChooseNetworkDialog  extends DialogFragment
         }
     }
     private void setupLocation() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (mLocationManager != null) {
+            boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if(gpsEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600, 1000, this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600, 1000, this);
                 Toast.makeText(getActivity(), "Getting current location", Toast.LENGTH_SHORT).show();
             }
-            Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Location lastKnownLocationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            Location lastKnownLocationPassive =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            Location lastKnownLocationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location lastKnownLocationNetwork = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location lastKnownLocationPassive =  mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
 
             if (lastKnownLocationGPS != null) {
                 mLatitude = lastKnownLocationGPS.getLatitude();
@@ -164,6 +166,7 @@ public class ChooseNetworkDialog  extends DialogFragment
         mLatitude = location.getLatitude();
         mLongitude = location.getLongitude();
         Toast.makeText(getActivity(), "Location updated", Toast.LENGTH_SHORT).show();
+        mLocationManager.removeUpdates(this);
     }
 
     @Override

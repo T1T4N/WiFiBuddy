@@ -51,7 +51,6 @@ public class PrivateItemsFragment extends Fragment
         WifiStateDialog.WifiStateDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "PRIVATE_FRAGMENT";
-    private OnFragmentInteractionListener mListener;
     private SectionChangedListener mSectionChangedListener;
     private HashMap<Integer, String> mSectionTitles;
     private WifiManager mWifiManager;
@@ -67,7 +66,6 @@ public class PrivateItemsFragment extends Fragment
      */
     private PrivateItemsAdapter mAdapterPrivate;
 
-    // TODO: Rename and change types of parameters
     public static PrivateItemsFragment newInstance(int position) {
         PrivateItemsFragment fragment = new PrivateItemsFragment();
         Bundle args = new Bundle();
@@ -87,7 +85,6 @@ public class PrivateItemsFragment extends Fragment
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
             mSectionChangedListener = (SectionChangedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -180,7 +177,6 @@ public class PrivateItemsFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     /**

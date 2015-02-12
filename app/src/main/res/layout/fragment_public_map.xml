@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     android:background="@null">
 
-    <com.google.android.gms.maps.MapView
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/map_public"
         android:layout_height="match_parent"
-        android:id="@+id/map_public">
-        </com.google.android.gms.maps.MapView>
+        android:layout_width="match_parent"/>
 </LinearLayout>

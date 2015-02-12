@@ -1,6 +1,5 @@
 package com.titantech.wifibuddy;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -41,8 +40,6 @@ public class MainActivity extends ActionBarActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private TextView mNavigationEmail;
     private ImageView mNavigationAvatar;
-    private Fragment mFragmentProfile, mFragmentPrivateItems,
-        mFragmentScanItems, mFragmentPublicItems, mFragmentPublicItemsMap;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -139,60 +136,40 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getFragmentManager();
         switch (position) {
             case 0:
-                if (mFragmentProfile == null) {
-                    mFragmentProfile = ProfileFragment.newInstance(position);
-                }
                 fragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, mFragmentProfile)
+                    .replace(R.id.container, ProfileFragment.newInstance(position))
                     .commit();
-
-                // startActivity(new Intent(this, LoginActivity.class));
                 break;
             case 1:
-                if (mFragmentPrivateItems == null) {
-                    mFragmentPrivateItems = PrivateItemsFragment.newInstance(position);
-                }
                 fragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, mFragmentPrivateItems)
+                    .replace(R.id.container, PrivateItemsFragment.newInstance(position))
                     .commit();
                 break;
             case 2:
-                if (mFragmentScanItems == null) {
-                    mFragmentScanItems = ScanItemsFragment.newInstance(position);
-                }
                 fragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, mFragmentScanItems)
+                    .replace(R.id.container, ScanItemsFragment.newInstance(position))
                     .commit();
                 break;
             case 3:
                 if (!longClick) {
                     if (Utils.isInternetAvailable(this)) {
-                        if (mFragmentPublicItemsMap == null) {
-                            mFragmentPublicItemsMap = PublicItemsMapFragment.newInstance(position);
-                        }
                         fragmentManager
                             .beginTransaction()
-                            .replace(R.id.container, mFragmentPublicItemsMap)
+                            .replace(R.id.container, PublicItemsMapFragment.newInstance(position))
                             .commit();
                     } else {
-                        if (mFragmentPublicItems == null) {
-                            mFragmentPublicItems = PublicItemsFragment.newInstance(position);
-                        }
                         fragmentManager
                             .beginTransaction()
-                            .replace(R.id.container, mFragmentPublicItems)
+                            .replace(R.id.container, PublicItemsFragment.newInstance(position))
                             .commit();
                     }
                 } else {
-                    if (mFragmentPublicItems == null) {
-                        mFragmentPublicItems = PublicItemsFragment.newInstance(position);
-                    }
                     fragmentManager
                         .beginTransaction()
-                        .replace(R.id.container, mFragmentPublicItems)
+                        .replace(R.id.container, PublicItemsFragment.newInstance(position))
                         .commit();
                 }
                 break;

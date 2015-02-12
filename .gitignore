@@ -4,3 +4,5 @@
 /.idea/libraries
 .DS_Store
 /build
+Web Service/node_modules
+Web Service/WebBuddy Specification.txt

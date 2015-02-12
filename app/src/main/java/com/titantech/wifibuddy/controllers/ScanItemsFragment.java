@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.adapters.ScanItemsAdapter;
-import com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListener;
 import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
@@ -32,13 +31,9 @@ import com.titantech.wifibuddy.provider.WifiContentProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Robert on 27.01.2015.
- */
 public class ScanItemsFragment extends Fragment
     implements View.OnClickListener, WifiStateDialog.WifiStateDialogListener {
 
-    private OnFragmentInteractionListener mListener;
     private SectionChangedListener mSectionChangedListener;
     private WifiManager mWifiManager;
     private ContentResolver mContentResolver;
@@ -48,7 +43,6 @@ public class ScanItemsFragment extends Fragment
 
     private ScanItemsAdapter mAdapter;
 
-    // TODO: Rename and change types of parameters
     public static ScanItemsFragment newInstance(int position) {
         ScanItemsFragment fragment = new ScanItemsFragment();
         Bundle args = new Bundle();
@@ -68,7 +62,6 @@ public class ScanItemsFragment extends Fragment
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
             mSectionChangedListener = (SectionChangedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -80,11 +73,12 @@ public class ScanItemsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /*
         if (getArguments() != null) {
             // mParam1 = getArguments().getString(ARG_PARAM1);
             // mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        */
     }
 
     @Override
@@ -110,7 +104,6 @@ public class ScanItemsFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     private QueryResult queryNetwork(String bssid, String name, int level) {
