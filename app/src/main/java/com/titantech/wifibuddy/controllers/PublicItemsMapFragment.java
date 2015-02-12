@@ -46,7 +46,7 @@ public class PublicItemsMapFragment extends Fragment
     private MapView mMapView;
     private GoogleMap mMap;
 
-    private LocationManager locationManager;
+    private LocationManager mLocationManager;
 
     // TODO: Rename and change types of parameters
     public static PublicItemsMapFragment newInstance(int position) {
@@ -68,7 +68,7 @@ public class PublicItemsMapFragment extends Fragment
             mSectionChangedListener = (SectionChangedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
         mSectionChangedListener.onSectionChanged(getArguments().getInt(Constants.ARG_SECTION_NUMBER));
     }
@@ -115,7 +115,15 @@ public class PublicItemsMapFragment extends Fragment
         getLoaderManager().initLoader(Constants.LOADER_PUBLIC_ID, args, this);
         Intent intent = IntentFactory.getPublicItems(getActivity());
         getActivity().startService(intent);
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean netEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if (!gpsEnabled && !netEnabled) {
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, this);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1000, this);
 
         return view;
     }
@@ -123,21 +131,13 @@ public class PublicItemsMapFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean netEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if (!gpsEnabled && !netEnabled) {
-            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1000, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = WifiDbOpenHelper.PROJECTION_ALL_PUBLIC;
         CursorLoader cursorLoader = new CursorLoader(getActivity(),
-            WifiContentProvider.CONTENT_URI_PUBLIC, projection, null, null, null);
+                WifiContentProvider.CONTENT_URI_PUBLIC, projection, null, null, null);
         return cursorLoader;
     }
 
@@ -152,22 +152,35 @@ public class PublicItemsMapFragment extends Fragment
 
                 while (data.moveToNext()) {
                     googleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(
-                                data.getDouble(data.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
-                                data.getDouble(data.getColumnIndex(WifiDbOpenHelper.COLUMN_LON))
-                            ))
-                            .title(
-                                data.getString(data.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME))
-                            )
-                            .snippet(
-                                "Added by: " +
-                                    data.getString(data.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER_MAIL))
-                            )
-                        //.icon(
-                        //    BitmapDescriptorFactory.fromResource(android.R.drawable.ic_menu_info_details)
-                        //)
+                                    .position(new LatLng(
+                                            data.getDouble(data.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
+                                            data.getDouble(data.getColumnIndex(WifiDbOpenHelper.COLUMN_LON))
+                                    ))
+                                    .title(
+                                            data.getString(data.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME))
+                                    )
+                                    .snippet(
+                                            "Added by: " +
+                                                    data.getString(data.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER_MAIL))
+                                    )
+                            //.icon(
+                            //    BitmapDescriptorFactory.fromResource(android.R.drawable.ic_menu_info_details)
+                            //)
                     );
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(41.6137143, 21.743258), 8);
+                    CameraUpdate cameraUpdate = null;
+                    Location lastKnownLocationGPS = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    Location lastKnownLocationNetwork = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                    Location lastKnownLocationPassive = mLocationManager.getLastKnownLocation(mLocationManager.PASSIVE_PROVIDER);
+
+                    if (lastKnownLocationGPS != null) {
+                        CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocationGPS.getLatitude(), lastKnownLocationGPS.getLongitude()), 14);
+                    } else if (lastKnownLocationNetwork != null) {
+                        CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocationNetwork.getLatitude(), lastKnownLocationNetwork.getLongitude()), 14);
+                    } else if (lastKnownLocationPassive != null) {
+                        CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocationPassive.getLatitude(), lastKnownLocationPassive.getLongitude()), 14);
+                    } else {
+                        cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(41.6137143, 21.743258), 8);
+                    }
                     googleMap.animateCamera(cameraUpdate);
                 }
             }
@@ -181,7 +194,7 @@ public class PublicItemsMapFragment extends Fragment
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
             mMap.animateCamera(cameraUpdate);
         }
-        locationManager.removeUpdates(this);
+        mLocationManager.removeUpdates(this);
     }
 
     @Override
