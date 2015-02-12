@@ -117,7 +117,7 @@ public class DataManagerService extends IntentService {
         putData.put("privacyType", String.valueOf(ap.getPrivacyType()));
         putData.put("lat", String.valueOf(ap.getLatitude()));
         putData.put("lon", String.valueOf(ap.getLongitude()));
-        putData.put("lastAccessed", Utils.datetime_format.format(ap.getLastAccessed()));
+        putData.put("lastAccessed", Utils.formatDate(ap.getLastAccessed()));
 
         RestRequest request = new PutRestRequest(requestUrl, putData, authUser.getEmail(), authUser.getPassword());
         RestTask<Integer> putTaskPrivate = new RestTask<>(this, new AccessPointPutParser(), new ResultListener<Integer>() {

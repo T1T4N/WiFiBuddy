@@ -27,6 +27,7 @@ import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
+import com.titantech.wifibuddy.models.Utils;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,22 +177,9 @@ public class ScanItemsFragment extends Fragment
         }
     }
 
-    private boolean checkWifiAndEnable() {
-        if (mWifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED &&
-            mWifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLING) {
-            FragmentManager fm = getFragmentManager();
-            WifiStateDialog wifiStateDialog = new WifiStateDialog();
-            wifiStateDialog.setTargetFragment(this, 1);
-            wifiStateDialog.show(fm, "fragment_wifi_state");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     private void updateResults(boolean checkWifi) {
         if (checkWifi) {
-            if (checkWifiAndEnable()) {
+            if (Utils.checkWifiAndEnable(this, mWifiManager)) {
                 updateResultsInternal();
             }
         } else updateResultsInternal();

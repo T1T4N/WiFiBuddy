@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
+import com.titantech.wifibuddy.models.Utils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -183,6 +184,9 @@ public class WifiContentProvider extends ContentProvider {
             case PUBLIC_MULTIPLE:
                 id = db.insertWithOnConflict(WifiDbOpenHelper.TABLE_PUBLIC, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 getContext().getContentResolver().notifyChange(uri, null);
+                if(values.getAsString(WifiDbOpenHelper.COLUMN_PUBLISHER).equals(Utils.getAuthenticatedUser().getUserId())){
+                    getContext().getContentResolver().notifyChange(CONTENT_URI_PRIVATE, null);
+                }
                 return Uri.parse(BASE_PATH_PUBLIC + "/" + id);
 
             case PRIVATE_MULTIPLE:

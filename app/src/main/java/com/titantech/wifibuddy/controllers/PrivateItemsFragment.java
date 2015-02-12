@@ -2,13 +2,17 @@ package com.titantech.wifibuddy.controllers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shamanland.fab.FloatingActionButton;
 import com.titantech.wifibuddy.R;
@@ -42,12 +47,14 @@ import java.util.HashMap;
  * interface.
  */
 public class PrivateItemsFragment extends Fragment
-    implements AdapterView.OnItemLongClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+    implements View.OnClickListener, AdapterView.OnItemLongClickListener,
+        WifiStateDialog.WifiStateDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "PRIVATE_FRAGMENT";
     private OnFragmentInteractionListener mListener;
     private SectionChangedListener mSectionChangedListener;
     private HashMap<Integer, String> mSectionTitles;
+    private WifiManager mWifiManager;
     /**
      * The fragment's ListView/GridView.
      */
@@ -109,6 +116,8 @@ public class PrivateItemsFragment extends Fragment
         mListViewPrivate = (ListView) view.findViewById(R.id.list_private);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.private_fab);
+        fab.setOnClickListener(this);
+
         mListViewPrivate.setEmptyView(view.findViewById(android.R.id.empty));
         mSectionTitles = new HashMap<Integer, String>();
         mSectionTitles.put(0, getString(R.string.header_public));
@@ -144,6 +153,7 @@ public class PrivateItemsFragment extends Fragment
             getActivity().startService(intent);
 
             mListViewPrivate.setOnItemLongClickListener(this);
+            mWifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         } catch (Exception ex) {
             Log.e(TAG, "CURSOR_ERROR: Error onCreateView");
             ex.printStackTrace();
@@ -237,6 +247,40 @@ public class PrivateItemsFragment extends Fragment
     }
 
     @Override
+    public void onClick(View v) {
+        if(Utils.checkWifiAndEnable(this, mWifiManager)){
+            openChooseDialog();
+        }
+    }
+
+    private void openChooseDialog() {
+        FragmentManager fm = getFragmentManager();
+        ChooseNetworkDialog chooseNetworkDialog = new ChooseNetworkDialog();
+        chooseNetworkDialog.show(fm, "dialog_choose_network");
+    }
+
+    @Override
+    public void onFinishWifiStateDialog() {
+        mWifiManager.setWifiEnabled(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+                    openChooseDialog();
+                } else {
+                    Toast.makeText(getActivity(), "WiFi is being enabled", Toast.LENGTH_SHORT).show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "WiFi is enabled. You can now scan for networks", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 1000);
+                }
+            }
+        }, 1000);
+    }
+
+    @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor c = (Cursor) mAdapterPrivate.getItem(position);
 
@@ -256,6 +300,7 @@ public class PrivateItemsFragment extends Fragment
         );
 
         Intent intent = new Intent(getActivity(), EditActivity.class);
+        intent.putExtra(Constants.EXTRA_ACTION, Constants.ACTION_EDIT);
         intent.putExtra(Constants.EXTRA_ACTION_EDIT, ap);
         startActivity(intent);
         return true;

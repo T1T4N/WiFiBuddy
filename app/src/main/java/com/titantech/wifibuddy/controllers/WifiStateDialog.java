@@ -22,7 +22,7 @@ public class WifiStateDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        View view = inflater.inflate(R.layout.fragment_wifi_state_dialog, container);
+        View view = inflater.inflate(R.layout.dialog_wifi_state, container);
         Button mButtonOk = (Button) view.findViewById(R.id.dialog_wifi_ok);
         Button mButtonCancel = (Button) view.findViewById(R.id.dialog_wifi_cancel);
 

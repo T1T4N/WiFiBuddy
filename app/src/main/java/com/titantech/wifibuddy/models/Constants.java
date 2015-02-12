@@ -19,6 +19,10 @@ public class Constants {
 
     public static final String ARG_SECTION_NUMBER = "section_number";
     public static final String EXTRA_ACTION_EDIT = "action_item";
+    public static final String EXTRA_ACTION = "action";
+
+    public static final int ACTION_EDIT = 0;
+    public static final int ACTION_ADD = 1;
 
     public static final int SERVICE_ACTION_GET_PUBLIC = 317;
     public static final int SERVICE_ACTION_GET_PRIVATE = 318;

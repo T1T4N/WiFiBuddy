@@ -91,7 +91,7 @@ public class AccessPoint implements Parcelable {
         values.put(WifiDbOpenHelper.COLUMN_PRIVACY, this.privacyType);
         values.put(WifiDbOpenHelper.COLUMN_LAT, this.latitude);
         values.put(WifiDbOpenHelper.COLUMN_LON, this.longitude);
-        values.put(WifiDbOpenHelper.COLUMN_LASTACCESS, Utils.datetime_format.format(this.lastAccessed));
+        values.put(WifiDbOpenHelper.COLUMN_LASTACCESS, Utils.formatDate(this.lastAccessed));
 
         return values;
     }
@@ -99,7 +99,7 @@ public class AccessPoint implements Parcelable {
     private Date parseDate(String date) {
         Date ret = null;
         try {
-            ret = Utils.datetime_format.parse(date);
+            ret = Utils.parseDate(date);
         } catch (Exception e) {
             e.printStackTrace();
             ret = new Date();
@@ -107,6 +107,13 @@ public class AccessPoint implements Parcelable {
         return ret;
     }
 
+    public static Uri getBaseContentUriFromPrivacy(int privacyType){
+        if(privacyType == 1) {
+            return WifiContentProvider.CONTENT_URI_PRIVATE;
+        } else {
+            return WifiContentProvider.CONTENT_URI_PUBLIC;
+        }
+    }
     public Uri getContentUriFromPrivacy(){
         if(privacyType == 1) {
             return Uri.parse(WifiContentProvider.CONTENT_URI_PRIVATE + "/" + internalId);
@@ -220,6 +227,6 @@ public class AccessPoint implements Parcelable {
         dest.writeInt(this.privacyType);
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
-        dest.writeString(Utils.datetime_format.format(this.lastAccessed));
+        dest.writeString(Utils.formatDate(this.lastAccessed));
     }
 }

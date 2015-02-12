@@ -33,7 +33,7 @@ public class UpdateManager {
         String lastUpdate = mPreferences.getString(Constants.PREFS_KEY_LAST_UPDATE, null);
         if (lastUpdate != null) {
             try {
-                mLastUpdate = Utils.datetime_format.parse(lastUpdate);
+                mLastUpdate = Utils.parseDate(lastUpdate);
             } catch (ParseException e) {
                 mLastUpdate = new Date();
             }
@@ -80,7 +80,7 @@ public class UpdateManager {
     }
 
     public boolean shouldUpdate(String timeNow) throws ParseException {
-        return shouldUpdate(Utils.datetime_format.parse(timeNow));
+        return shouldUpdate(Utils.parseDate(timeNow));
     }
 
     public boolean shouldUpdate(Date timeNow) {
@@ -90,7 +90,17 @@ public class UpdateManager {
     }
 
     public void queueInsert(AccessPoint ap) {
+        // Update local database
+        mApplicationContext.getContentResolver()
+                .insert(AccessPoint.getBaseContentUriFromPrivacy(ap.getPrivacyType()), ap.toContentValues());
 
+        if (Utils.isInternetAvailable(mApplicationContext)) {
+            // Perform server update right away
+            // TODO: Register Broadcast Receiver to get result status
+            //mApplicationContext.startService(IntentFactory.insertItem(mApplicationContext, ap));
+        } else {
+            // TODO: Save update locally if it cannot be sent to the server immediately
+        }
     }
 
     public void queueUpdate(AccessPoint changedAp) {

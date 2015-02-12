@@ -43,14 +43,18 @@ import java.util.Date;
 public class EditActivity extends ActionBarActivity
     implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener,
     SlidingDownPanelLayout.PanelSlideListener {
+
+    private static final String TAG = "EDIT_ACTIVITY";
     private AccessPoint mEditItem;
     private GoogleMap mGoogleMap;
     private Marker mItemMarker;
+    private InputMethodManager mInputMethodManager;
 
     private SlidingDownPanelLayout mSlidingDownPanelLayout;
-    private EditText mFieldName, mFieldBssid, mFieldPassword;
+    private EditText mFieldName, mFieldBssid, mFieldPassword, mFieldSecurity;
     private Spinner mFieldPrivacy;
     private TextView mFieldLat, mFieldLon;
+    private boolean mEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +65,9 @@ public class EditActivity extends ActionBarActivity
         Intent intent = getIntent();
         try {
             mEditItem = intent.getParcelableExtra(Constants.EXTRA_ACTION_EDIT);
+            mEdit = intent.getIntExtra(Constants.EXTRA_ACTION, Constants.ACTION_EDIT) == Constants.ACTION_EDIT;
         } catch (Exception e) {
-            Log.e("CURSOR_ERROR", "Error onCreate");
+            Log.e(TAG, "Error onCreate");
             e.printStackTrace();
             finish();
         }
@@ -82,6 +87,7 @@ public class EditActivity extends ActionBarActivity
         mFieldName = (EditText) findViewById(R.id.edit_field_name);
         mFieldBssid = (EditText) findViewById(R.id.edit_field_bssid);
         mFieldPassword = (EditText) findViewById(R.id.edit_field_password);
+        mFieldSecurity = (EditText) findViewById(R.id.edit_field_security);
         mFieldPrivacy = (Spinner) findViewById(R.id.edit_field_privacy);
         mFieldLat = (TextView) findViewById(R.id.edit_field_latitude);
         mFieldLon = (TextView) findViewById(R.id.edit_field_longitude);
@@ -94,9 +100,16 @@ public class EditActivity extends ActionBarActivity
         mFieldName.setText(mEditItem.getName());
         mFieldBssid.setText(mEditItem.getBssid());
         mFieldPassword.setText(mEditItem.getPassword());
+        mFieldSecurity.setText(mEditItem.getSecurityType());
         mFieldPrivacy.setSelection(mEditItem.getPrivacyType());
         mFieldLat.setText(String.format("%.5f", mEditItem.getLatitude()));
         mFieldLon.setText(String.format("%.5f", mEditItem.getLongitude()));
+
+        if(mEdit){
+            mFieldName.setEnabled(true);
+        } else {
+            mFieldName.setEnabled(false);
+        }
     }
 
     private void setupActionBar() {
@@ -104,7 +117,6 @@ public class EditActivity extends ActionBarActivity
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
             mToolbar.setNavigationIcon(R.drawable.ic_menu_close);
-            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
     }
@@ -119,10 +131,17 @@ public class EditActivity extends ActionBarActivity
         mEditItem.setLastAccessed(new Date());
 
         int newPrivacy = mEditItem.getPrivacyType();
-        if (oldPrivacy == newPrivacy) {
-            UpdateManager.getInstance().queueUpdate(mEditItem);
-        } else {
+        if(mEdit) {
+            if (oldPrivacy == newPrivacy) {
+                UpdateManager.getInstance().queueUpdate(mEditItem);
+            } else {
 
+            }
+        } else {
+            if(newPrivacy == 1) {   // Private items have no publisher mail in the db
+                mEditItem.setPublisherMail(null);
+            }
+            UpdateManager.getInstance().queueInsert(mEditItem);
         }
     }
 
@@ -178,9 +197,14 @@ public class EditActivity extends ActionBarActivity
                 mItemMarker.setDraggable(false);
                 mGoogleMap.getUiSettings().setScrollGesturesEnabled(false);
 
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.toggleSoftInputFromWindow(mFieldName.getWindowToken(), InputMethodManager.SHOW_FORCED, 0);
-                mFieldName.requestFocus();
+                mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(mEdit) {
+                    mInputMethodManager.toggleSoftInputFromWindow(mFieldName.getWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+                    mFieldName.requestFocus();
+                } else {
+                    mInputMethodManager.toggleSoftInputFromWindow(mFieldPassword.getWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+                    mFieldPassword.requestFocus();
+                }
             }
         }, 500);
     }

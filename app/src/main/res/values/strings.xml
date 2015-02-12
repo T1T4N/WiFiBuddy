@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="debug_placeholder">PLACEHOLDER</string>
     <string name="app_name">WiFi Buddy</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -40,6 +41,7 @@
     <string name="scan_dialog_action_positive">AGREE</string>
     <string name="scan_dialog_action_negative">DISAGREE</string>
 
+    <string name="choose_dialog_title">Choose WiFi AP to add</string>
     <string-array name="drawer_labels">
         <item>Profile</item>
         <item>My Access Points</item>
