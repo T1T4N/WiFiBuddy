@@ -122,7 +122,7 @@ public class EditActivity extends ActionBarActivity
     }
 
     private void updateAccessPoint() {
-        int oldPrivacy = mEditItem.getPrivacyType();
+        AccessPoint oldAp = new AccessPoint(mEditItem);
         mEditItem.setName(mFieldName.getText().toString());
         mEditItem.setPassword(mFieldPassword.getText().toString());
         mEditItem.setPrivacyType(mFieldPrivacy.getSelectedItemPosition());
@@ -130,18 +130,15 @@ public class EditActivity extends ActionBarActivity
         mEditItem.setLongitude(mItemMarker.getPosition().longitude);
         mEditItem.setLastAccessed(new Date());
 
-        int newPrivacy = mEditItem.getPrivacyType();
         if(mEdit) {
-            if (oldPrivacy == newPrivacy) {
+            if (oldAp.getPrivacyType() == mEditItem.getPrivacyType()) {
                 UpdateManager.getInstance().queueUpdate(mEditItem);
             } else {
-                AccessPoint oldAp = new AccessPoint(mEditItem);
-                oldAp.setPrivacyType(oldPrivacy);
                 UpdateManager.getInstance().queueDelete(oldAp);
                 UpdateManager.getInstance().queueInsert(mEditItem);
             }
         } else {
-            if(newPrivacy == 1) {   // Private items have no publisher mail in the db
+            if(mEditItem.getPrivacyType() == 1) {   // Private items have no publisher mail in the db
                 mEditItem.setPublisherMail(null);
             }
             UpdateManager.getInstance().queueInsert(mEditItem);
@@ -226,8 +223,7 @@ public class EditActivity extends ActionBarActivity
         mGoogleMap.getUiSettings().setScrollGesturesEnabled(true);
         mItemMarker.setDraggable(true);
 
-        //Bug fix:  MarkerDragListener must be set in order to receive the
-        //          draggable markers new position
+        //Bug fix:  MarkerDragListener must be set in order to receive the draggable marker's new position
         mGoogleMap.setOnMarkerDragListener(this);
     }
 

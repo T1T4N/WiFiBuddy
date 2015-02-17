@@ -4,13 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.Utils;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class IntentFactory {
     public static Intent getPrivateItems(Context ctx) {
