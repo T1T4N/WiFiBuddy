@@ -92,9 +92,6 @@ public class PublicItemsFragment extends Fragment
         getLoaderManager().initLoader(Constants.LOADER_PUBLIC_ID, args, this);
         mAdapter = new PublicItemsAdapter(getActivity(), null);
         mListView.setAdapter(mAdapter);
-
-        Intent intent = IntentFactory.getPublicItems(getActivity());
-        getActivity().startService(intent);
         return view;
     }
 

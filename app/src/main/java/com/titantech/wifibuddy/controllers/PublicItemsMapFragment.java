@@ -99,9 +99,6 @@ public class PublicItemsMapFragment extends Fragment
     @Override
     public void onMapReady() {
         getLoaderManager().initLoader(Constants.LOADER_PUBLIC_ID, null, this);
-        // TODO: Remove this code, will be handled by UpdateManager
-        Intent intent = IntentFactory.getPublicItems(getActivity());
-        getActivity().startService(intent);
     }
 
     @Override
@@ -129,6 +126,9 @@ public class PublicItemsMapFragment extends Fragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
         if(mMapFragment != null) {
+            //mMapFragment = PublicMapFragment.newInstance();
+            //getChildFragmentManager().beginTransaction().replace(R.id.map_public, mMapFragment).commit();
+
             mMapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {

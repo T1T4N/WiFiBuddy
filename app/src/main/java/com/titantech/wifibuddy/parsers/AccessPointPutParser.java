@@ -10,7 +10,7 @@ public class AccessPointPutParser implements ResultParser<Integer> {
     @Override
     public Integer parseResult(String content) throws JSONException {
         if (content == null) {
-            return -2;  //Network error somehow
+            return -2;  //Server unreachable
         } else if (content.equals("401")) {
             return -1;  //Unauthorized or not owner
         } else {

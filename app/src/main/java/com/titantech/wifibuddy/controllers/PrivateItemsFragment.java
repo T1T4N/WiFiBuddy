@@ -146,8 +146,8 @@ public class PrivateItemsFragment extends Fragment
             mListViewPrivate.setOnTouchListener(mSwipeDismissListener);
             mListViewPrivate.setOnScrollListener(mSwipeDismissListener.makeScrollListener());
 
-            Intent intent = IntentFactory.getPrivateItems(getActivity());
-            getActivity().startService(intent);
+            //Intent intent = IntentFactory.getPrivateItems(getActivity());
+            //getActivity().startService(intent);
 
             mListViewPrivate.setOnItemLongClickListener(this);
             mWifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);

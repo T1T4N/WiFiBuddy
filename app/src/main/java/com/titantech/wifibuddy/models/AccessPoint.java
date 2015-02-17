@@ -59,6 +59,20 @@ public class AccessPoint implements Parcelable {
         this.longitude = longitude;
         this.lastAccessed = parseDate(lastAccessed.substring(0, 19));
     }
+    public AccessPoint(AccessPoint ap){
+        this.internalId = ap.internalId;
+        this.id = ap.id;
+        this.publisherId = ap.publisherId;
+        this.publisherMail = ap.publisherMail;
+        this.bssid = ap.bssid;
+        this.name = ap.name;
+        this.password = ap.password;
+        this.securityType = ap.securityType;
+        this.privacyType = ap.privacyType;
+        this.latitude = ap.latitude;
+        this.longitude = ap.longitude;
+        this.lastAccessed = ap.lastAccessed;
+    }
 
     public AccessPoint(Parcel parc) {
         this.internalId = parc.readInt();

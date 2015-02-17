@@ -1,21 +1,28 @@
 package com.titantech.wifibuddy.models;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.titantech.wifibuddy.service.IntentFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by Robert on 11.02.2015.
@@ -26,6 +33,17 @@ public class UpdateManager {
     private SharedPreferences mPreferences;
     private Date mLastUpdate;
     private Context mApplicationContext;
+    private Set<UpdateTask> updateTasks;
+    private IntentFilter mFilter;
+
+    private BroadcastReceiver mStatusReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();
+
+        }
+    };
 
     private UpdateManager(Context applicationContext) {
         mApplicationContext = applicationContext;
@@ -40,7 +58,34 @@ public class UpdateManager {
         } else {
             mLastUpdate = Utils.long_ago;
         }
+        updateTasks = new TreeSet<UpdateTask>();
+        mFilter = new IntentFilter();
+        mFilter.addAction(Constants.SERVICE_UPDATE_COMPLETED);
+
         readPreviousUpdates();
+        updateDatabase();
+        processTasks();
+    }
+
+    private void writeUpdateTime(Date lastUpdate){
+        SharedPreferences.Editor editor
+                = mApplicationContext.getSharedPreferences(Constants.PREFS_NAME, Activity.MODE_PRIVATE).edit();
+        editor.putString(Constants.PREFS_KEY_LAST_UPDATE, Utils.formatDate(lastUpdate));
+        editor.apply();
+    }
+
+    public void updateDatabase() {
+        if(shouldUpdate()){
+            Toast.makeText(mApplicationContext, "Updating database", Toast.LENGTH_SHORT).show();
+
+            Intent intent = IntentFactory.getPrivateItems(mApplicationContext);
+            mApplicationContext.startService(intent);
+            intent = IntentFactory.getPublicItems(mApplicationContext);
+            mApplicationContext.startService(intent);
+
+            mLastUpdate = new Date();
+            writeUpdateTime(mLastUpdate);
+        }
     }
 
     public static void setupInstance(Context applicationContext) {
@@ -50,7 +95,6 @@ public class UpdateManager {
             }
         }
     }
-
     public static UpdateManager getInstance() throws RuntimeException {
         if (instance == null) {
             throw new RuntimeException("The UpdateManager is not initialized");
@@ -63,13 +107,17 @@ public class UpdateManager {
             FileInputStream fis = mApplicationContext.openFileInput(Constants.FILENAME_UPDATES);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String line = null;
+            int idx = 0;
             while ((line = br.readLine()) != null) {
-                //TODO: Read saved updates in there was no internet connection to send them to the server
+                if(!line.isEmpty() && !line.trim().equals("")){
+                    updateTasks.add(new UpdateTask(idx, line));
+                }
+                idx++;
             }
             br.close();
             fis.close();
         } catch (IOException e) {
-            Log.e(TAG, "No previous queued updates found");
+            Log.d(TAG, "No previous queued updates found");
             try {
                 FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
                 fos.close();
@@ -79,28 +127,33 @@ public class UpdateManager {
         }
     }
 
-    public boolean shouldUpdate(String timeNow) throws ParseException {
-        return shouldUpdate(Utils.parseDate(timeNow));
-    }
-
     public boolean shouldUpdate(Date timeNow) {
         long diff = timeNow.getTime() - mLastUpdate.getTime();
-        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffMinutes = diff / (60 * 1000); // % 60;
         return diffMinutes > 60;
     }
+    private boolean shouldUpdate() {
+        return shouldUpdate(new Date());
+    }
 
+    public void processTasks(){
+        if(Utils.isInternetAvailable(mApplicationContext)) {
+            // Perform server update right away
+
+            
+            mApplicationContext.registerReceiver(mStatusReceiver, mFilter);
+
+            //mApplicationContext.startService(IntentFactory.deleteItem(mApplicationContext, deletedAp));
+        }
+    }
     public void queueInsert(AccessPoint ap) {
         // Update local database
         mApplicationContext.getContentResolver()
                 .insert(AccessPoint.getBaseContentUriFromPrivacy(ap.getPrivacyType()), ap.toContentValues());
 
-        if (Utils.isInternetAvailable(mApplicationContext)) {
-            // Perform server update right away
-            // TODO: Register Broadcast Receiver to get result status
-            //mApplicationContext.startService(IntentFactory.insertItem(mApplicationContext, ap));
-        } else {
-            // TODO: Save update locally if it cannot be sent to the server immediately
-        }
+        UpdateTask updateTask = new UpdateTask(-1, UpdateTask.UpdateType.INSERT, ap, false);
+        updateTasks.add(updateTask);
+        processTasks();
     }
 
     public void queueUpdate(AccessPoint changedAp) {
@@ -108,24 +161,138 @@ public class UpdateManager {
         mApplicationContext.getContentResolver()
             .update(changedAp.getContentUriFromPrivacy(), changedAp.toContentValues(), null, null);
 
-        if (Utils.isInternetAvailable(mApplicationContext)) {
-            // Perform server update right away
-            // TODO: Register Broadcast Receiver to get result status
-            mApplicationContext.startService(IntentFactory.putItem(mApplicationContext, changedAp));
-        } else {
-            // TODO: Save update locally if it cannot be sent to the server immediately
-        }
+        UpdateTask updateTask = new UpdateTask(-1, UpdateTask.UpdateType.UPDATE, changedAp, false);
+        updateTasks.add(updateTask);
+        processTasks();
     }
 
     public void queueDelete(AccessPoint deletedAp) {
         mApplicationContext.getContentResolver()
             .delete(deletedAp.getContentUriFromPrivacy(), null, null);
-        if (Utils.isInternetAvailable(mApplicationContext)) {
-            // Perform server update right away
-            // TODO: Register Broadcast Receiver to get result status
-            //mApplicationContext.startService(IntentFactory.deleteItem(mApplicationContext, deletedAp));
-        } else {
-            // TODO: Save update locally if it cannot be sent to the server immediately
+
+        UpdateTask updateTask = new UpdateTask(-1, UpdateTask.UpdateType.DELETE, deletedAp, false);
+        updateTasks.add(updateTask);
+        processTasks();
+    }
+
+    private static class UpdateTask implements Comparable<UpdateTask>, Parcelable{
+        public static enum UpdateType {INSERT, UPDATE, DELETE}
+        public int lineIndex;
+        public UpdateType updateType;
+        public int internalId;
+        public int privacyType;
+        public AccessPoint accessPoint;
+        public boolean isWritten;
+
+        public UpdateTask(int lineIdx, String lineContents){
+            lineIndex = lineIdx;
+            String[] lineOpts = lineContents.split("\\s+");
+            if(lineOpts.length != 3){
+                throw new RuntimeException("Cannot create UpdateTask due to line format error");
+            }
+            int type;
+            try {
+                type = Integer.parseInt(lineOpts[0]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Cannot create UpdateTask due to type format error");
+            }
+            updateType = UpdateType.values()[type];
+
+            int intId;
+            try {
+                intId = Integer.parseInt(lineOpts[1]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Cannot create UpdateTask due to internalId format error");
+            }
+            internalId = intId;
+
+            int privType;
+            try {
+                privType= Integer.parseInt(lineOpts[2]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Cannot create UpdateTask due to privacyType format error");
+            }
+            privacyType = privType;
+
+            isWritten = true;
+        }
+
+        public UpdateTask(int lineIndex, UpdateType updateType, AccessPoint accessPoint, boolean isWritten){
+            this.lineIndex = lineIndex;
+            this.updateType = updateType;
+            this.internalId = accessPoint.getInternalId();
+            this.privacyType = accessPoint.getPrivacyType();
+            this.accessPoint = accessPoint;
+            this.isWritten = isWritten;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            UpdateTask that = (UpdateTask) o;
+
+            if (internalId != that.internalId) return false;
+            if (updateType != that.updateType) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = updateType != null ? updateType.hashCode() : 0;
+            result = 31 * result + internalId;
+            return result;
+        }
+
+        @Override
+        public int compareTo(UpdateTask another) {
+            if(updateType.ordinal() < another.updateType.ordinal()) {
+                return -1;
+            }
+            else if(updateType.ordinal() > another.updateType.ordinal()) {
+                return 1;
+            }
+            else return 0;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(lineIndex);
+            dest.writeInt(updateType.ordinal());
+            dest.writeInt(internalId);
+            dest.writeInt(privacyType);
+            dest.writeParcelable(accessPoint, 0);
+            dest.writeInt(isWritten ? 1 : 0);
+        }
+        public static final Parcelable.Creator<UpdateTask> CREATOR = new Parcelable.Creator<UpdateTask>() {
+            @Override
+            public UpdateTask createFromParcel(Parcel source) {
+                return new UpdateTask(source);
+            }
+
+            @Override
+            public UpdateTask[] newArray(int size) {
+                return new UpdateTask[size];
+            }
+        };
+
+        public UpdateTask(Parcel parc){
+            lineIndex = parc.readInt();
+            updateType = UpdateType.values()[parc.readInt()];
+            internalId = parc.readInt();
+            privacyType = parc.readInt();
+            accessPoint = parc.readParcelable(null);
+            isWritten = parc.readInt() == 1;
         }
     }
 }

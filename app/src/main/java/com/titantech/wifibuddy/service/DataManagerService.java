@@ -123,11 +123,12 @@ public class DataManagerService extends IntentService {
         RestTask<Integer> putTaskPrivate = new RestTask<>(this, new AccessPointPutParser(), new ResultListener<Integer>() {
             @Override
             public void onDownloadResult(Integer result) {
-                if (result == -2)
+                if (result == Constants.SERVICE_RESULT_UNREACHABLE)
                     Log.e(TAG, "Couldn't communicate with server");
-                if (result == -1)
+                if (result == Constants.SERVICE_RESULT_UNAUTHORIZED)
                     Log.e(TAG, "You are not an owner of this AP");
 
+                // result == number of affected rows
                 Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
                 intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, result);
                 ctx.sendBroadcast(intent);

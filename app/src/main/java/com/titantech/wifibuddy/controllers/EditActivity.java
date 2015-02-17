@@ -135,7 +135,10 @@ public class EditActivity extends ActionBarActivity
             if (oldPrivacy == newPrivacy) {
                 UpdateManager.getInstance().queueUpdate(mEditItem);
             } else {
-
+                AccessPoint oldAp = new AccessPoint(mEditItem);
+                oldAp.setPrivacyType(oldPrivacy);
+                UpdateManager.getInstance().queueDelete(oldAp);
+                UpdateManager.getInstance().queueInsert(mEditItem);
             }
         } else {
             if(newPrivacy == 1) {   // Private items have no publisher mail in the db
