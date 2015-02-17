@@ -9,6 +9,7 @@ import android.util.Log;
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
+import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.User;
 import com.titantech.wifibuddy.models.Utils;
 import com.titantech.wifibuddy.network.RestTask;
@@ -20,6 +21,7 @@ import com.titantech.wifibuddy.parsers.AccessPointPutParser;
 import com.titantech.wifibuddy.parsers.AccessPointsFetchParser;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,9 +50,21 @@ public class DataManagerService extends IntentService {
                 case Constants.SERVICE_ACTION_GET_PUBLIC:
                     fetchPublic(authUser);
                     break;
-                case Constants.SERVICE_ACTION_PUT:
-                    AccessPoint ap = data.getParcelable("update_item");
-                    putAccessPoint(authUser, ap);
+                case Constants.SERVICE_ACTION_BATCH_TASKS:
+                    ArrayList<UpdateManager.UpdateTask> tasks = data.getParcelableArrayList("update_item");
+                    for(UpdateManager.UpdateTask task : tasks){
+                        switch (task.updateType){
+                            case INSERT:
+                                // TODO: insertAccessPoint
+                                break;
+                            case UPDATE:
+                                putAccessPoint(authUser, task);
+                                break;
+                            case DELETE:
+                                // TODO: deleteAccessPoint
+                                break;
+                        }
+                    }
                     break;
             }
         }
@@ -107,7 +121,8 @@ public class DataManagerService extends IntentService {
         fetchTaskPrivate.execute(request);
     }
 
-    private void putAccessPoint(final User authUser, final AccessPoint ap) {
+    private void putAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
+        final AccessPoint ap = updateTask.accessPoint;
         final Context ctx = this;
         String requestUrl = getString(R.string.url_edit_ap) + ap.getId();
         HashMap<String, String> putData = new HashMap<String, String>();
@@ -131,6 +146,7 @@ public class DataManagerService extends IntentService {
                 // result == number of affected rows
                 Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
                 intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, result);
+                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_TASK, updateTask);
                 ctx.sendBroadcast(intent);
             }
         });

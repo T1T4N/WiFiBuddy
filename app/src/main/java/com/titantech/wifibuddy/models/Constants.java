@@ -14,6 +14,7 @@ public class Constants {
     public static final String TASK_EXCEPTION_OCCURRED = "com.titantech.wifibuddy.TASK_EXCEPTION_OCCURRED";
     public static final String SERVICE_UPDATE_STARTED = "com.titantech.wifibuddy.SERVICE_UPDATE_STARTED";
     public static final String SERVICE_UPDATE_RESULT_STATUS = "com.titantech.wifibuddy.SERVICE_UPDATE_RESULT_STATUS";
+    public static final String SERVICE_UPDATE_RESULT_TASK = "com.titantech.wifibuddy.SERVICE_UPDATE_RESULT_TASK";
     public static final String SERVICE_UPDATE_COMPLETED = "com.titantech.wifibuddy.SERVICE_UPDATE_COMPLETED";
     public static final String FILENAME_UPDATES = "update_queue";
 

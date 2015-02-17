@@ -248,6 +248,17 @@ public class EditActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            mInputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "onPause Keyboard hide error");
+        }
+    }
+
+    @Override
     public void onMarkerDragStart(Marker marker) {
 
     }

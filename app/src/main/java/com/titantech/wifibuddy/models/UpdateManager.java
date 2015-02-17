@@ -20,13 +20,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * Created by Robert on 11.02.2015.
- */
 public class UpdateManager {
     private static final String TAG = "UPDATE_MANAGER";
     private static UpdateManager instance = null;
@@ -42,6 +40,17 @@ public class UpdateManager {
         public void onReceive(Context context, Intent intent) {
             Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();
 
+            int updateResult = intent.getIntExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, 0);
+            UpdateTask task = intent.getParcelableExtra(Constants.SERVICE_UPDATE_RESULT_TASK);
+            if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
+                    updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
+                if(task.isWritten && task.lineIndex >= 0){
+                    // TODO: Remove task from the local file
+                }
+                else {
+                    updateTasks.remove(task);
+                }
+            }
         }
     };
 
@@ -130,8 +139,12 @@ public class UpdateManager {
     public boolean shouldUpdate(Date timeNow) {
         long diff = timeNow.getTime() - mLastUpdate.getTime();
         long diffMinutes = diff / (60 * 1000); // % 60;
-        return diffMinutes > 60;
+
+        // TODO: Change when debugging complete
+        return diffMinutes > 0;
+        // return diffMinutes > 60;
     }
+
     private boolean shouldUpdate() {
         return shouldUpdate(new Date());
     }
@@ -139,11 +152,11 @@ public class UpdateManager {
     public void processTasks(){
         if(Utils.isInternetAvailable(mApplicationContext)) {
             // Perform server update right away
-
-            
-            mApplicationContext.registerReceiver(mStatusReceiver, mFilter);
-
-            //mApplicationContext.startService(IntentFactory.deleteItem(mApplicationContext, deletedAp));
+            if(updateTasks.size() > 0) {
+                mApplicationContext.registerReceiver(mStatusReceiver, mFilter);
+                Intent intent = IntentFactory.batchActions(mApplicationContext, new ArrayList<UpdateTask>(updateTasks));
+                mApplicationContext.startService(intent);
+            }
         }
     }
     public void queueInsert(AccessPoint ap) {
@@ -175,7 +188,7 @@ public class UpdateManager {
         processTasks();
     }
 
-    private static class UpdateTask implements Comparable<UpdateTask>, Parcelable{
+    public static class UpdateTask implements Comparable<UpdateTask>, Parcelable{
         public static enum UpdateType {INSERT, UPDATE, DELETE}
         public int lineIndex;
         public UpdateType updateType;
@@ -238,6 +251,8 @@ public class UpdateManager {
 
             if (internalId != that.internalId) return false;
             if (updateType != that.updateType) return false;
+            if (privacyType != that.privacyType) return false;
+            if (accessPoint != null && !accessPoint.equals(that.accessPoint)) return false;
 
             return true;
         }
@@ -246,6 +261,7 @@ public class UpdateManager {
         public int hashCode() {
             int result = updateType != null ? updateType.hashCode() : 0;
             result = 31 * result + internalId;
+            result = 31 * result + (accessPoint != null ? accessPoint.hashCode() : 0);
             return result;
         }
 
@@ -291,7 +307,7 @@ public class UpdateManager {
             updateType = UpdateType.values()[parc.readInt()];
             internalId = parc.readInt();
             privacyType = parc.readInt();
-            accessPoint = parc.readParcelable(null);
+            accessPoint = parc.readParcelable(getClass().getClassLoader());
             isWritten = parc.readInt() == 1;
         }
     }
