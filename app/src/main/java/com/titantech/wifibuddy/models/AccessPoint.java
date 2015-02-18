@@ -135,8 +135,13 @@ public class AccessPoint implements Parcelable {
             return Uri.parse(WifiContentProvider.CONTENT_URI_PUBLIC + "/" + internalId);
         }
     }
+
     public String getId() {
         return id;
+    }
+
+    public void setInternalId(int internalId) {
+        this.internalId = internalId;
     }
 
     public int getInternalId() {

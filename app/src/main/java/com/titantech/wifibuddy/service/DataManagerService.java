@@ -16,9 +16,11 @@ import com.titantech.wifibuddy.network.RestTask;
 import com.titantech.wifibuddy.network.ResultListener;
 import com.titantech.wifibuddy.network.requests.DeleteRestRequest;
 import com.titantech.wifibuddy.network.requests.GetRestRequest;
+import com.titantech.wifibuddy.network.requests.PostRestRequest;
 import com.titantech.wifibuddy.network.requests.PutRestRequest;
 import com.titantech.wifibuddy.network.requests.RestRequest;
 import com.titantech.wifibuddy.parsers.AccessPointDeleteParser;
+import com.titantech.wifibuddy.parsers.AccessPointPostParser;
 import com.titantech.wifibuddy.parsers.AccessPointPutParser;
 import com.titantech.wifibuddy.parsers.AccessPointsGetParser;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
@@ -53,11 +55,12 @@ public class DataManagerService extends IntentService {
                     fetchPublic(authUser);
                     break;
                 case Constants.SERVICE_ACTION_BATCH_TASKS:
+                    sendBroadcast(new Intent(Constants.SERVICE_BATCH_STARTED));
                     ArrayList<UpdateManager.UpdateTask> tasks = data.getParcelableArrayList("update_item");
                     for(UpdateManager.UpdateTask task : tasks){
                         switch (task.updateType){
                             case INSERT:
-                                // TODO: insertAccessPoint
+                                postAccessPoint(authUser, task);
                                 break;
                             case UPDATE:
                                 putAccessPoint(authUser, task);
@@ -67,6 +70,7 @@ public class DataManagerService extends IntentService {
                                 break;
                         }
                     }
+                    // sendBroadcast(new Intent(Constants.SERVICE_BATCH_COMPLETED));
                     break;
             }
         }
@@ -124,7 +128,7 @@ public class DataManagerService extends IntentService {
     }
 
     private void putAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
-        final AccessPoint ap = updateTask.accessPoint;
+        final AccessPoint ap = updateTask.getAccessPoint();
         final Context ctx = this;
         if(ap == null) {
             Log.e(TAG, "AccessPoint is NULL");
@@ -140,7 +144,7 @@ public class DataManagerService extends IntentService {
         putData.put("lastAccessed", Utils.formatDate(ap.getLastAccessed()));
 
         RestRequest request = new PutRestRequest(requestUrl, putData, authUser.getEmail(), authUser.getPassword());
-        RestTask<Integer> putTaskPrivate = new RestTask<>(this, new AccessPointPutParser(), new ResultListener<Integer>() {
+        RestTask<Integer> putTaskPrivate = new RestTask<Integer>(this, new AccessPointPutParser(), new ResultListener<Integer>() {
             @Override
             public void onDownloadResult(Integer result) {
                 if (result == Constants.SERVICE_RESULT_UNREACHABLE)
@@ -160,7 +164,7 @@ public class DataManagerService extends IntentService {
     }
 
     private void deleteAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
-        final AccessPoint ap = updateTask.accessPoint;
+        final AccessPoint ap = updateTask.getAccessPoint();
         final Context ctx = this;
         if(ap == null) {
             Log.e(TAG, "AccessPoint is NULL");
@@ -190,5 +194,55 @@ public class DataManagerService extends IntentService {
         });
         ctx.sendBroadcast(new Intent(Constants.SERVICE_UPDATE_STARTED));
         deleteTaskPrivate.execute(request);
+    }
+
+    private void postAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
+        final AccessPoint ap = updateTask.getAccessPoint();
+        final Context ctx = this;
+        if(ap == null) {
+            Log.e(TAG, "AccessPoint is NULL");
+        }
+        String requestUrl = getString(R.string.url_instance_ap);
+        HashMap<String, String> postData = new HashMap<String, String>();
+        postData.put("bssid", ap.getBssid());
+        postData.put("name", ap.getName());
+        postData.put("password", ap.getPassword());
+        postData.put("securityType", ap.getSecurityType());
+        postData.put("privacyType", String.valueOf(ap.getPrivacyType()));
+        postData.put("lat", String.valueOf(ap.getLatitude()));
+        postData.put("lon", String.valueOf(ap.getLongitude()));
+        postData.put("lastAccessed", Utils.formatDate(ap.getLastAccessed()));
+
+        RestRequest request = new PostRestRequest(requestUrl, postData, authUser.getEmail(), authUser.getPassword());
+        RestTask<AccessPoint> postTaskPrivate = new RestTask<AccessPoint>(this, new AccessPointPostParser(), new ResultListener<AccessPoint>() {
+
+            @Override
+            public void onDownloadResult(AccessPoint result) {
+                int res = 0;
+                if (result == null) {
+                    Log.e(TAG, "Couldn't communicate with server");
+                    res = Constants.SERVICE_RESULT_UNREACHABLE;
+                }
+                else if (result.getId().equals("401")) {
+                    Log.e(TAG, "You are not an owner of this AP");
+                    res = Constants.SERVICE_RESULT_UNAUTHORIZED;
+                } else {
+                    result.setInternalId(updateTask.getAccessPoint().getInternalId());
+                    // Update the local AP's externalId with the one received from the server
+                    getContentResolver()
+                            .update(result.getContentUriFromPrivacy(),
+                                    result.toContentValues(), null, null);
+                    updateTask.setAccessPoint(result);
+                    Log.d(TAG, "AP externalId: " + result.getId());
+                }
+
+                Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
+                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, res);
+                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_TASK, updateTask);
+                ctx.sendBroadcast(intent);
+            }
+        });
+        ctx.sendBroadcast(new Intent(Constants.SERVICE_UPDATE_STARTED));
+        postTaskPrivate.execute(request);
     }
 }

@@ -12,6 +12,8 @@ public class Constants {
     public static final String TASK_URL_NOT_PROVIDED = "com.titantech.wifibuddy.TASK_URL_NOT_PROVIDED";
 
     public static final String TASK_EXCEPTION_OCCURRED = "com.titantech.wifibuddy.TASK_EXCEPTION_OCCURRED";
+    public static final String SERVICE_BATCH_STARTED = "com.titantech.wifibuddy.SERVICE_BATCH_STARTED";
+    public static final String SERVICE_BATCH_COMPLETED = "com.titantech.wifibuddy.SERVICE_BATCH_COMPLETED";
     public static final String SERVICE_UPDATE_STARTED = "com.titantech.wifibuddy.SERVICE_UPDATE_STARTED";
     public static final String SERVICE_UPDATE_RESULT_STATUS = "com.titantech.wifibuddy.SERVICE_UPDATE_RESULT_STATUS";
     public static final String SERVICE_UPDATE_RESULT_TASK = "com.titantech.wifibuddy.SERVICE_UPDATE_RESULT_TASK";

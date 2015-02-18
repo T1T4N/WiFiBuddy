@@ -137,11 +137,13 @@ public class EditActivity extends ActionBarActivity
         mEditItem.setLastAccessed(new Date());
 
         if(mEdit) {
-            if (oldAp.getPrivacyType() == mEditItem.getPrivacyType()) {
-                UpdateManager.getInstance().queueUpdate(mEditItem);
-            } else {
-                UpdateManager.getInstance().queueDelete(oldAp);
-                UpdateManager.getInstance().queueInsert(mEditItem);
+            if(!oldAp.equals(mEditItem)) {  // If change occurred
+                if (oldAp.getPrivacyType() == mEditItem.getPrivacyType()) {
+                    UpdateManager.getInstance().queueUpdate(mEditItem);
+                } else {    // Need to remove the entry from the previous table and insert it in the new
+                    UpdateManager.getInstance().queueDelete(oldAp);
+                    UpdateManager.getInstance().queueInsert(mEditItem);
+                }
             }
         } else {
             if(mEditItem.getPrivacyType() == 1) {   // Private items have no publisher mail in the db

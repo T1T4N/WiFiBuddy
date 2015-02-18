@@ -1,6 +1,7 @@
 package com.titantech.wifibuddy.parsers;
 
 import com.titantech.wifibuddy.models.AccessPoint;
+import com.titantech.wifibuddy.models.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +15,8 @@ public class AccessPointPostParser implements ResultParser<AccessPoint> {
         if (content == null) {
             ret = null;    //throw new JSONException("No content received in the parser");
         } else if (content.equals("401")) {
-            ret = null;     //throw new JSONException("Unauthorized");
+            //throw new JSONException("Unauthorized");
+            ret = new AccessPoint("401", null, null, null, null, null, -1, -1, -1, Utils.formatDate());
         } else if (content.length() > 3) {
             JSONObject jsonObject = new JSONObject(content);
 

@@ -51,16 +51,6 @@ public class UpdateManager {
             if(task != null) {
                 if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
                         updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
-                    if(task.updateType == UpdateTask.UpdateType.INSERT){
-                        // Update the local AP externalId with the one received from the server
-                        if(task.accessPoint == null) {
-                            Log.e(TAG, "Result AP is null");
-                        } else {
-                            mApplicationContext.getContentResolver()
-                                    .update(task.accessPoint.getContentUriFromPrivacy(),
-                                            task.accessPoint.toContentValues(), null, null);
-                        }
-                    }
 
                     if (task.isWritten) {
                         if (pendingRemoval == null)
@@ -242,9 +232,15 @@ public class UpdateManager {
     }
     public void queueInsert(AccessPoint ap) {
         // Update local database
-        mApplicationContext.getContentResolver()
-                .insert(AccessPoint.getBaseContentUriFromPrivacy(ap.getPrivacyType()), ap.toContentValues());
-
+        Uri insertUri = mApplicationContext.getContentResolver().insert(AccessPoint.getBaseContentUriFromPrivacy(ap.getPrivacyType()), ap.toContentValues());
+        String id = insertUri.getLastPathSegment();
+        try {
+            int internalId = Integer.parseInt(id);
+            ap.setInternalId(internalId);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "URI LastPathSegment NaN");
+            e.printStackTrace();
+        }
         UpdateTask updateTask = new UpdateTask(-1, UpdateTask.UpdateType.INSERT, ap, false);
         updateTasks.add(updateTask);
         processTasks();
@@ -252,8 +248,8 @@ public class UpdateManager {
 
     public void queueUpdate(AccessPoint changedAp) {
         // Update local database
-        mApplicationContext.getContentResolver()
-            .update(changedAp.getContentUriFromPrivacy(), changedAp.toContentValues(), null, null);
+        int updatedRowsCount = mApplicationContext.getContentResolver()
+                .update(changedAp.getContentUriFromPrivacy(), changedAp.toContentValues(), null, null);
 
         UpdateTask updateTask = new UpdateTask(-1, UpdateTask.UpdateType.UPDATE, changedAp, false);
         updateTasks.add(updateTask);
@@ -261,7 +257,7 @@ public class UpdateManager {
     }
 
     public void queueDelete(AccessPoint deletedAp) {
-        mApplicationContext.getContentResolver()
+        int deletedRowsCount = mApplicationContext.getContentResolver()
             .delete(deletedAp.getContentUriFromPrivacy(), null, null);
 
         UpdateTask updateTask = new UpdateTask(-1, UpdateTask.UpdateType.DELETE, deletedAp, false);
@@ -276,7 +272,7 @@ public class UpdateManager {
         public String bssid;
         public String externalId;
         public int privacyType;
-        public AccessPoint accessPoint;
+        private AccessPoint accessPoint;
         public boolean isWritten;
 
         public UpdateTask(int lineIdx, String lineContents){
@@ -397,6 +393,17 @@ public class UpdateManager {
             privacyType = parc.readInt();
             accessPoint = parc.readParcelable(getClass().getClassLoader());
             isWritten = parc.readInt() == 1;
+        }
+
+        public AccessPoint getAccessPoint() {
+            return accessPoint;
+        }
+
+        public void setAccessPoint(AccessPoint accessPoint) {
+            this.accessPoint = accessPoint;
+            this.externalId = accessPoint.getId();
+            this.privacyType = accessPoint.getPrivacyType();
+            this.bssid = accessPoint.getBssid();
         }
     }
 }

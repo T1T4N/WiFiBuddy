@@ -19,6 +19,7 @@ public abstract class RestRequest {
     }
 
     //protected static SSLSocketFactory debug_socketFactory = RestRequest.debug_setUpHttpsConnection();
+    private static final String TAG = "REST_REQUEST";
     protected String requestUrl;
     protected String requestType;
     protected String requestData;
@@ -69,10 +70,10 @@ public abstract class RestRequest {
                     return "422";
             }
         } catch (MalformedURLException e) {
+            Log.d(TAG, "Malformed URL");
             e.printStackTrace();
         } catch (IOException e) {
-            Log.e("NETWORK_ERROR", e.getMessage(), e);
-
+            Log.e(TAG, "NETWORK_ERROR" + e.getMessage(), e);
             e.printStackTrace();
         }
         return null;
