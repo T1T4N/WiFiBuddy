@@ -15,10 +15,12 @@ import android.widget.Toast;
 import com.titantech.wifibuddy.service.IntentFactory;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +34,7 @@ public class UpdateManager {
     private Date mLastUpdate;
     private Context mApplicationContext;
     private Set<UpdateTask> updateTasks;
+    private Set<UpdateTask> pendingRemoval;
     private IntentFilter mFilter;
 
     private BroadcastReceiver mStatusReceiver = new BroadcastReceiver() {
@@ -45,7 +48,9 @@ public class UpdateManager {
             if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
                     updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
                 if(task.isWritten && task.lineIndex >= 0){
-                    // TODO: Remove task from the local file
+                    if(pendingRemoval == null)
+                        pendingRemoval = new TreeSet<UpdateTask>();
+                    pendingRemoval.add(task);
                 }
                 else {
                     updateTasks.remove(task);
@@ -68,6 +73,8 @@ public class UpdateManager {
             mLastUpdate = Utils.long_ago;
         }
         updateTasks = new TreeSet<UpdateTask>();
+        pendingRemoval = new TreeSet<UpdateTask>();
+
         mFilter = new IntentFilter();
         mFilter.addAction(Constants.SERVICE_UPDATE_COMPLETED);
 
@@ -135,7 +142,27 @@ public class UpdateManager {
             }
         }
     }
+    public void writePendingUpdates(){
+        // TODO: Remove task from the local file
+        try {
+            FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            for(UpdateTask task:updateTasks){
+                if(!pendingRemoval.contains(task)){
+                    task.isWritten = true;
+                    bw.append(task.toString()).append("\n");
+                }
+            }
+            bw.close();
+            fos.close();
 
+            updateTasks.removeAll(pendingRemoval);
+            pendingRemoval = new TreeSet<UpdateTask>();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "Application directory missing probably");
+        }
+    }
     public boolean shouldUpdate(Date timeNow) {
         long diff = timeNow.getTime() - mLastUpdate.getTime();
         long diffMinutes = diff / (60 * 1000); // % 60;
@@ -230,6 +257,7 @@ public class UpdateManager {
             }
             privacyType = privType;
 
+            // TODO: Read the AP from the database
             isWritten = true;
         }
 
@@ -240,6 +268,15 @@ public class UpdateManager {
             this.privacyType = accessPoint.getPrivacyType();
             this.accessPoint = accessPoint;
             this.isWritten = isWritten;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(updateType.ordinal()).append(" ");
+            sb.append(internalId).append(" ");
+            sb.append(privacyType).append(" ");
+            return sb.toString();
         }
 
         @Override

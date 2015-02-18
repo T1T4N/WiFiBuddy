@@ -1,31 +1,15 @@
 package com.titantech.wifibuddy.network.requests;
-import android.content.Context;
+
 import android.util.Base64;
 import android.util.Log;
 
-import com.titantech.wifibuddy.MainActivity;
-
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.security.KeyStore;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-
-/**
- * Created by Robert on 23.01.2015.
- */
 public abstract class RestRequest {
     public static class RequestType {
         public static final String GET = "GET";
@@ -77,7 +61,7 @@ public abstract class RestRequest {
                     }
                     br.close();
                     return sb.toString();
-                case 401: // Unautorized
+                case 401: // Unauthorized
                     return "401";
                 case 404: // Entity not found
                     return "404";
