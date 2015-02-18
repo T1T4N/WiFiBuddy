@@ -14,11 +14,13 @@ import com.titantech.wifibuddy.models.User;
 import com.titantech.wifibuddy.models.Utils;
 import com.titantech.wifibuddy.network.RestTask;
 import com.titantech.wifibuddy.network.ResultListener;
+import com.titantech.wifibuddy.network.requests.DeleteRestRequest;
 import com.titantech.wifibuddy.network.requests.GetRestRequest;
 import com.titantech.wifibuddy.network.requests.PutRestRequest;
 import com.titantech.wifibuddy.network.requests.RestRequest;
+import com.titantech.wifibuddy.parsers.AccessPointDeleteParser;
 import com.titantech.wifibuddy.parsers.AccessPointPutParser;
-import com.titantech.wifibuddy.parsers.AccessPointsFetchParser;
+import com.titantech.wifibuddy.parsers.AccessPointsGetParser;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class DataManagerService extends IntentService {
                                 putAccessPoint(authUser, task);
                                 break;
                             case DELETE:
-                                // TODO: deleteAccessPoint
+                                deleteAccessPoint(authUser, task);
                                 break;
                         }
                     }
@@ -75,7 +77,7 @@ public class DataManagerService extends IntentService {
         String requestUrl = getString(R.string.url_public_aps);
         RestRequest request = new GetRestRequest(requestUrl, authUser.getEmail(), authUser.getPassword());
         RestTask<List<AccessPoint>> fetchTaskPublic = new RestTask<List<AccessPoint>>(
-            this, new AccessPointsFetchParser(true), new ResultListener<List<AccessPoint>>() {
+            this, new AccessPointsGetParser(true), new ResultListener<List<AccessPoint>>() {
             @Override
             public void onDownloadResult(List<AccessPoint> result) {
                 if (result != null && !result.equals(Collections.emptyList())) {
@@ -97,7 +99,7 @@ public class DataManagerService extends IntentService {
         String requestUrl = getString(R.string.url_private_aps);
         RestRequest request = new GetRestRequest(requestUrl, authUser.getEmail(), authUser.getPassword());
         RestTask<List<AccessPoint>> fetchTaskPrivate = new RestTask<List<AccessPoint>>(
-            this, new AccessPointsFetchParser(false), new ResultListener<List<AccessPoint>>() {
+            this, new AccessPointsGetParser(false), new ResultListener<List<AccessPoint>>() {
             @Override
             public void onDownloadResult(List<AccessPoint> result) {
                 if (result != null && !result.equals(Collections.emptyList())) {
@@ -127,7 +129,7 @@ public class DataManagerService extends IntentService {
         if(ap == null) {
             Log.e(TAG, "AccessPoint is NULL");
         }
-        String requestUrl = getString(R.string.url_edit_ap) + ap.getId();
+        String requestUrl = getString(R.string.url_instance_ap) + ap.getId();
         HashMap<String, String> putData = new HashMap<String, String>();
         putData.put("name", ap.getName());
         putData.put("password", ap.getPassword());
@@ -155,5 +157,38 @@ public class DataManagerService extends IntentService {
         });
         ctx.sendBroadcast(new Intent(Constants.SERVICE_UPDATE_STARTED));
         putTaskPrivate.execute(request);
+    }
+
+    private void deleteAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
+        final AccessPoint ap = updateTask.accessPoint;
+        final Context ctx = this;
+        if(ap == null) {
+            Log.e(TAG, "AccessPoint is NULL");
+        }
+        String requestUrl = getString(R.string.url_instance_ap) + ap.getId();
+        RestRequest request = new DeleteRestRequest(requestUrl, authUser.getEmail(), authUser.getPassword());
+        RestTask<String> deleteTaskPrivate = new RestTask<String>(this, new AccessPointDeleteParser(), new ResultListener<String>() {
+            @Override
+            public void onDownloadResult(String result) {
+                Integer status = null;
+                try {
+                    status = Integer.parseInt(result);
+                    if (status == Constants.SERVICE_RESULT_UNREACHABLE)
+                        Log.e(TAG, "Couldn't communicate with server");
+                    if (status == Constants.SERVICE_RESULT_UNAUTHORIZED)
+                        Log.e(TAG, "You are not an owner of this AP");
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    Log.d(TAG, "DELETE Response was text, and not an error code");
+                }
+
+                Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
+                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, (result == null ? 0 : result));
+                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_TASK, updateTask);
+                ctx.sendBroadcast(intent);
+            }
+        });
+        ctx.sendBroadcast(new Intent(Constants.SERVICE_UPDATE_STARTED));
+        deleteTaskPrivate.execute(request);
     }
 }

@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,8 @@ import java.util.List;
  */
 public class ChooseNetworkDialog  extends DialogFragment
         implements AdapterView.OnItemClickListener, LocationListener {
+
+    private static final String TAG = "CHOOSE_DIALOG";
     private ChooseItemsAdapter mAdapter;
     private WifiManager mWifiManager;
     private LocationManager mLocationManager;
@@ -51,13 +54,23 @@ public class ChooseNetworkDialog  extends DialogFragment
         View view = inflater.inflate(R.layout.dialog_choose_network, container);
         mListNetworks = (ListView) view.findViewById(R.id.dialog_choose_list);
         mListNetworks.setEmptyView(view.findViewById(android.R.id.empty));
-        mWifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-
-        mAdapter = new ChooseItemsAdapter(getActivity());
-        fillList();
-        mListNetworks.setAdapter(mAdapter);
-        setupLocation();
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        try {
+            mWifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+            mAdapter = new ChooseItemsAdapter(getActivity());
+            fillList();
+            mListNetworks.setAdapter(mAdapter);
+            setupLocation();
+        } catch (Exception ex){
+            Log.d(TAG, "onActivityCreated EXCEPTION!");
+            Log.d(TAG, "Is Activity null? " + String.valueOf(getActivity() == null));
+            ex.printStackTrace();
+        }
     }
 
     private void fillList() {
@@ -92,10 +105,17 @@ public class ChooseNetworkDialog  extends DialogFragment
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager != null) {
             boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             if(gpsEnabled) {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 600, 1000, this);
+            }
+            if(networkEnabled) {
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 600, 1000, this);
+            }
+            if(gpsEnabled || networkEnabled){
                 Toast.makeText(getActivity(), "Getting current location", Toast.LENGTH_SHORT).show();
             }
+
             Location lastKnownLocationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location lastKnownLocationNetwork = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Location lastKnownLocationPassive =  mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
@@ -165,7 +185,13 @@ public class ChooseNetworkDialog  extends DialogFragment
     public void onLocationChanged(Location location) {
         mLatitude = location.getLatitude();
         mLongitude = location.getLongitude();
-        Toast.makeText(getActivity(), "Location updated", Toast.LENGTH_SHORT).show();
+        Context ctx = getActivity();
+        if(ctx == null) {
+            Log.e(TAG, "onLocationChanged Activity is null");
+        }
+        else {
+            Toast.makeText(ctx, "Location updated", Toast.LENGTH_SHORT).show();
+        }
         mLocationManager.removeUpdates(this);
     }
 

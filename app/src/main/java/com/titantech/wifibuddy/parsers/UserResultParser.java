@@ -1,18 +1,11 @@
 package com.titantech.wifibuddy.parsers;
 
-/**
- * Created by Robert on 23.01.2015.
- */
 import com.titantech.wifibuddy.models.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserPutParser implements ResultParser<User> {
+public class UserResultParser implements ResultParser<User> {
     @Override
     public User parseResult(String content) throws JSONException {
         User ret = null;

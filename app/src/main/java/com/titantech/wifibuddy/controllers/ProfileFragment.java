@@ -22,7 +22,7 @@ import com.titantech.wifibuddy.models.Utils;
 import com.titantech.wifibuddy.network.RestTask;
 import com.titantech.wifibuddy.network.ResultListener;
 import com.titantech.wifibuddy.network.requests.PutRestRequest;
-import com.titantech.wifibuddy.parsers.UserPutParser;
+import com.titantech.wifibuddy.parsers.UserResultParser;
 
 /**
  * Created by Robert on 24.01.2015.
@@ -164,7 +164,7 @@ public class ProfileFragment extends Fragment
             oldPassword
         );
 
-        RestTask<User> updateTask = new RestTask<User>(getActivity(), new UserPutParser(), new ResultListener<User>() {
+        RestTask<User> updateTask = new RestTask<User>(getActivity(), new UserResultParser(), new ResultListener<User>() {
             @Override
             public void onDownloadResult(User result) {
                 if (result.equals(User.nullUser())) {

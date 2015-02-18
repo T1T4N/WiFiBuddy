@@ -219,15 +219,14 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onSectionChanged(int number) {
-        //TODO NullPointerException ?
         try {
             mTitle = mSectionTitles[number];
         } catch(Exception ex){
-            Log.e(TAG, "SECTION_CHANGED" + mTitle.toString());
-            Log.e(TAG, "SECTION_CHANGED" + String.valueOf(mSectionTitles == null));
+            Log.e(TAG, "SECTION_CHANGED Title is null? " + String.valueOf(mTitle == null));
+            Log.e(TAG, "SECTION_CHANGED Titles array is null? " + String.valueOf(mSectionTitles == null));
             if(mSectionTitles != null){
-                Log.e(TAG, "SECTION_CHANGED" + String.valueOf(mSectionTitles.length));
-                Log.e(TAG, "SECTION_CHANGED" + String.valueOf(number));
+                Log.e(TAG, "SECTION_CHANGED Titles array length " + String.valueOf(mSectionTitles.length));
+                Log.e(TAG, "SECTION_CHANGED Section position" + String.valueOf(number));
             }
         }
     }
@@ -242,6 +241,12 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         Log.d(TAG, "onStop called");
     }
 }

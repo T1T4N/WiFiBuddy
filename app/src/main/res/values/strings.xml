@@ -65,6 +65,7 @@
 
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_edit">Edit Access Point</string>
+    <string name="title_activity_add">Add Access Point</string>
 
     <string name="hello_world">Hello world!</string>
 </resources>

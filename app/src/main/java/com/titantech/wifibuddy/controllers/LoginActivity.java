@@ -36,7 +36,7 @@ import com.titantech.wifibuddy.network.ResultListener;
 import com.titantech.wifibuddy.network.requests.GetRestRequest;
 import com.titantech.wifibuddy.network.requests.PostRestRequest;
 import com.titantech.wifibuddy.network.requests.RestRequest;
-import com.titantech.wifibuddy.parsers.UserPutParser;
+import com.titantech.wifibuddy.parsers.UserResultParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,7 +137,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         postData.put("password", password);
 
         RestRequest registerRequest = new PostRestRequest(mRegisterUrl, postData);
-        mAuthTask = new RestTask<User>(this, new UserPutParser(), new ResultListener<User>() {
+        mAuthTask = new RestTask<User>(this, new UserResultParser(), new ResultListener<User>() {
             @Override
             public void onDownloadResult(User result) {
                 mAuthTask = null;
@@ -169,7 +169,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         final Context currentContext = this;
 
         RestRequest authRequest = new GetRestRequest(mAuthUrl, email, password);
-        mAuthTask = new RestTask<User>(this, new UserPutParser(), new ResultListener<User>() {
+        mAuthTask = new RestTask<User>(this, new UserResultParser(), new ResultListener<User>() {
             @Override
             public void onDownloadResult(User result) {
                 mAuthTask = null;

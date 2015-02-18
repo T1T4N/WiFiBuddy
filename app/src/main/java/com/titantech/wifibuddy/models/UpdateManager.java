@@ -51,7 +51,7 @@ public class UpdateManager {
             if(task != null) {
                 if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
                         updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
-                    if (task.isWritten && task.lineIndex >= 0) {
+                    if (task.isWritten) {
                         if (pendingRemoval == null)
                             pendingRemoval = new TreeSet<UpdateTask>();
                         pendingRemoval.add(task);
@@ -83,8 +83,8 @@ public class UpdateManager {
         mFilter.addAction(Constants.SERVICE_UPDATE_COMPLETED);
 
         readPreviousUpdates();
-        updateDatabase();
         processTasks();
+        updateDatabase();
     }
 
     private void writeUpdateTime(Date lastUpdate){
@@ -149,39 +149,43 @@ public class UpdateManager {
         }
     }
     private void setAccessPoint(UpdateTask task) {
-
-        Cursor cursor = mApplicationContext.getContentResolver().query(
-                WifiContentProvider.CONTENT_URI_PRIVATE,
-                null,
-                WifiDbOpenHelper.COLUMN_BSSID + "=\"" + task.bssid + "\" AND " +
-                        WifiDbOpenHelper.COLUMN_PRIVACY + "=" + task.privacyType,
-                null,
-                null
-        );
-        if (!cursor.isAfterLast()) { //found
-            Log.d(TAG, "SetAccessPoint cursor len: " + cursor.getCount());
-            cursor.moveToNext();
-            AccessPoint ap = new AccessPoint(
-                    cursor.getInt(cursor.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
-                    null,
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_BSSID)),
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)),
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)),
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_SECURITY)),
-                    cursor.getInt(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY)),
-                    cursor.getDouble(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
-                    cursor.getDouble(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LON)),
-                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LASTACCESS))
-            );
-            task.accessPoint = ap;
+        // In the case with DELETE, the item has already been removed from the local DB, so we can't query
+        if(task.updateType == UpdateTask.UpdateType.DELETE){
+            task.accessPoint = new AccessPoint(task.externalId, null, task.bssid, null, null, null, task.privacyType, 0, 0, Utils.formatDate());
         } else {
-            Log.e(TAG, "AP NOT FOUND");
+            Cursor cursor = mApplicationContext.getContentResolver().query(
+                    WifiContentProvider.CONTENT_URI_PRIVATE,
+                    null,
+                    WifiDbOpenHelper.COLUMN_BSSID + "=\"" + task.bssid + "\" AND " +
+                            WifiDbOpenHelper.COLUMN_PRIVACY + "=" + task.privacyType,
+                    null,
+                    null
+            );
+            if (!cursor.isAfterLast()) { //found
+                Log.d(TAG, "SetAccessPoint cursor len: " + cursor.getCount());
+                cursor.moveToNext();
+                AccessPoint ap = new AccessPoint(
+                        cursor.getInt(cursor.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
+                        null,
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_BSSID)),
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)),
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_SECURITY)),
+                        cursor.getInt(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY)),
+                        cursor.getDouble(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
+                        cursor.getDouble(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LON)),
+                        cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LASTACCESS))
+                );
+                task.accessPoint = ap;
+            } else {
+                Log.e(TAG, "AP NOT FOUND");
+            }
         }
     }
     public void writePendingUpdates(){
-        // TODO: Remove task from the local file
+        // Do not put task in the local file when updating it
         try {
             if(updateTasks.size() > 0) {
                 FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
@@ -259,6 +263,7 @@ public class UpdateManager {
         public int lineIndex;
         public UpdateType updateType;
         public String bssid;
+        public String externalId;
         public int privacyType;
         public AccessPoint accessPoint;
         public boolean isWritten;
@@ -266,7 +271,7 @@ public class UpdateManager {
         public UpdateTask(int lineIdx, String lineContents){
             lineIndex = lineIdx;
             String[] lineOpts = lineContents.split("\\s+");
-            if(lineOpts.length != 3){
+            if(lineOpts.length != 4){
                 throw new RuntimeException("Cannot create UpdateTask due to line format error");
             }
             int type;
@@ -279,22 +284,25 @@ public class UpdateManager {
             updateType = UpdateType.values()[type];
 
             bssid = lineOpts[1];
+            externalId = lineOpts[2];
+
             int privType;
             try {
-                privType= Integer.parseInt(lineOpts[2]);
+                privType= Integer.parseInt(lineOpts[3]);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Cannot create UpdateTask due to privacyType format error");
             }
             privacyType = privType;
-
-            // TODO: Read the AP from the database
             isWritten = true;
         }
-        public UpdateTask(int lineIndex, UpdateType updateType, AccessPoint accessPoint, boolean isWritten){
+        public UpdateTask(int lineIndex, UpdateType updateType, AccessPoint accessPoint, boolean isWritten) {
+            if(accessPoint == null) throw new RuntimeException("AccessPoint is null");
+
             this.lineIndex = lineIndex;
             this.updateType = updateType;
             this.bssid= accessPoint.getBssid();
+            this.externalId = accessPoint.getId();
             this.privacyType = accessPoint.getPrivacyType();
             this.accessPoint = accessPoint;
             this.isWritten = isWritten;
@@ -304,6 +312,7 @@ public class UpdateManager {
             StringBuilder sb = new StringBuilder();
             sb.append(updateType.ordinal()).append(" ");
             sb.append(bssid).append(" ");
+            sb.append(externalId).append(" ");
             sb.append(privacyType).append(" ");
             return sb.toString();
         }
@@ -352,6 +361,7 @@ public class UpdateManager {
             dest.writeInt(lineIndex);
             dest.writeInt(updateType.ordinal());
             dest.writeString(bssid);
+            dest.writeString(externalId);
             dest.writeInt(privacyType);
             dest.writeParcelable(accessPoint, 0);
             dest.writeInt(isWritten ? 1 : 0);
@@ -372,6 +382,7 @@ public class UpdateManager {
             lineIndex = parc.readInt();
             updateType = UpdateType.values()[parc.readInt()];
             bssid = parc.readString();
+            externalId = parc.readString();
             privacyType = parc.readInt();
             accessPoint = parc.readParcelable(getClass().getClassLoader());
             isWritten = parc.readInt() == 1;

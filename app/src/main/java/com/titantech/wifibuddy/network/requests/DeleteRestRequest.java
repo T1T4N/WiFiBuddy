@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class GetRestRequest extends RestRequest {
+public class DeleteRestRequest extends RestRequest {
 
-    public GetRestRequest(String requestUrl, String authUsername, String authPassword) {
+    public DeleteRestRequest(String requestUrl, String authUsername, String authPassword) {
         this(requestUrl, authUsername, authPassword, 1000);
     }
 
-    public GetRestRequest(String requestUrl, String authUsername, String authPassword, int timeout) {
+    public DeleteRestRequest (String requestUrl, String authUsername, String authPassword, int timeout) {
         this.requestUrl = requestUrl;
-        this.requestType = RequestType.GET;
+        this.requestType = RequestType.DELETE;
         this.requestTimeout = timeout;
         this.encodedAuthorization = encodeCredentials(authUsername, authPassword);
         this.requestData = "";

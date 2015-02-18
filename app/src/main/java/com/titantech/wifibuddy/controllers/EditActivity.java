@@ -75,6 +75,12 @@ public class EditActivity extends ActionBarActivity
     }
 
     private void setupInterface() {
+        if(mEdit) {
+            setTitle(getString(R.string.title_activity_edit));
+        } else {
+            setTitle(getString(R.string.title_activity_add));
+        }
+
         MapFragment mapFragment = (MapFragment) getFragmentManager()
             .findFragmentById(R.id.map_edit);
         mapFragment.getMapAsync(this);

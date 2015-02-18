@@ -10,14 +10,17 @@ var User = require('../models/user');
  * Gets all public Access Points from all other users EXCEPT from the authenticated user.
  */
 router.get('/', authController.isAuthenticated, function(req, res) {
+  console.log('User: ' + req.user._id + ' trying to GET public APs');
   AccessPoint.find({
     privacyType: 0, 
     publisher: {'$ne': req.user._id}
   })
   .populate('publisher', 'email') // only return the Persons name
   .exec(function(err, aps) {
-    if (err)  res.send(err);
-    else      res.json(aps);
+    if (err)  {
+      console.log(err);
+      res.send(err);
+    } else    res.json(aps);
   });
 });
 
@@ -25,9 +28,9 @@ router.get('/', authController.isAuthenticated, function(req, res) {
  * Posts a new access point as the authenticated user.
  */
 router.post('/', authController.isAuthenticated, function(req, res) {
-   var ap = new AccessPoint();
+  console.log('User: ' + req.user._id + ' trying to POST an AP');
 
-  // Set the beer properties that came from the POST data
+  var ap = new AccessPoint();
   ap.bssid = req.body.bssid;
   ap.name = req.body.name;
   ap.password = req.body.password;
@@ -42,17 +45,24 @@ router.post('/', authController.isAuthenticated, function(req, res) {
   // Save the ap and check for errors
   ap.save(function(err) {
     if (err)  {
+      console.log(err);
       res.status(422).json({message: err.message});
     }
     else {
       User.findByIdAndUpdate(ap.publisher, {$push: {accesspoints: ap._id}}, function(err, user) {
-        if(err) res.send(err);
+        if(err) {
+          console.log(err);
+          res.send(err);
+        }
         else    res.json(ap);
       });
     }
   });
 });
+
 router.put('/:ap_id', authController.isAuthenticated, function(req, res) {
+  console.log('User: ' + req.user._id + ' trying to PUT AP with id: ' + req.params.ap_id);
+
   var authenticatedUser = req.user._id;
   AccessPoint.update({_id: req.params.ap_id, publisher: req.user._id}, 
     {
@@ -75,19 +85,35 @@ router.put('/:ap_id', authController.isAuthenticated, function(req, res) {
 });
 
 router.delete('/:ap_id', authController.isAuthenticated, function(req, res){
-  AccessPoint.findByIdAndRemove(req.params.ap_id, function(err) {
-    if (err)  res.send(err);
-    else{
-      User.findById(req.user._id, function(err, user) {
-        user.accesspoints.remove(req.params.ap_id);
-        user.save(function(error){
-          if (error)  res.send(error);
-          else        res.json({ message: 'AP removed' });
+  console.log('User: ' + req.user._id + ' trying to DELETE AP with id: ' + req.params.ap_id);
+
+  AccessPoint.find({_id: req.params.ap_id, publisher: req.user._id}, function(err, aps){
+    if (err)  {
+      console.log(err);
+      res.send(err);
+    }
+    else if (!aps || !Array.isArray(aps) || aps.length === 0) {
+      console.log('No aps found to remove');
+      res.status(401).json({message: "You are not the owner of this AP"});
+    }
+    else {
+      aps.forEach( function (ap) {
+        ap.remove(function(error) {
+          User.findById(req.user._id, function(err, user) {
+            user.accesspoints.remove(req.params.ap_id);
+            user.save(function(error){
+              if (error)  {
+                console.log(err);
+                res.send(error);
+              } else { 
+                res.json({ message: 'AP removed' });
+              }
+            });
+          });       
         });
-      });     
+      });
     }
   });
 });
-
 
 module.exports = router;

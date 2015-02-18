@@ -1,7 +1,6 @@
 package com.titantech.wifibuddy.parsers;
 
 import com.titantech.wifibuddy.models.AccessPoint;
-import com.titantech.wifibuddy.models.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,13 +10,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by Robert on 24.01.2015.
- */
-public class AccessPointsFetchParser implements ResultParser<List<AccessPoint>> {
+public class AccessPointsGetParser implements ResultParser<List<AccessPoint>> {
     private boolean mPopulated;
 
-    public AccessPointsFetchParser(boolean populated) {
+    public AccessPointsGetParser(boolean populated) {
         mPopulated = populated;
     }
 
