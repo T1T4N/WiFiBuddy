@@ -36,6 +36,7 @@ public class MainActivity extends ActionBarActivity
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+    private static final String TAG = "MAIN_ACTIVITY";
     private Toolbar mToolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private TextView mNavigationEmail;
@@ -222,12 +223,25 @@ public class MainActivity extends ActionBarActivity
         try {
             mTitle = mSectionTitles[number];
         } catch(Exception ex){
-            Log.e("SECTION_CHANGED", mTitle.toString());
-            Log.e("SECTION_CHANGED", String.valueOf(mSectionTitles == null));
+            Log.e(TAG, "SECTION_CHANGED" + mTitle.toString());
+            Log.e(TAG, "SECTION_CHANGED" + String.valueOf(mSectionTitles == null));
             if(mSectionTitles != null){
-                Log.e("SECTION_CHANGED", String.valueOf(mSectionTitles.length));
-                Log.e("SECTION_CHANGED", String.valueOf(number));
+                Log.e(TAG, "SECTION_CHANGED" + String.valueOf(mSectionTitles.length));
+                Log.e(TAG, "SECTION_CHANGED" + String.valueOf(number));
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause called");
+        UpdateManager.getInstance().writePendingUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onStop called");
     }
 }

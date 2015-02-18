@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.titantech.wifibuddy.db.WifiDbOpenHelper;
+import com.titantech.wifibuddy.provider.WifiContentProvider;
 import com.titantech.wifibuddy.service.IntentFactory;
 
 import java.io.BufferedReader;
@@ -45,15 +48,16 @@ public class UpdateManager {
 
             int updateResult = intent.getIntExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, 0);
             UpdateTask task = intent.getParcelableExtra(Constants.SERVICE_UPDATE_RESULT_TASK);
-            if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
-                    updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
-                if(task.isWritten && task.lineIndex >= 0){
-                    if(pendingRemoval == null)
-                        pendingRemoval = new TreeSet<UpdateTask>();
-                    pendingRemoval.add(task);
-                }
-                else {
-                    updateTasks.remove(task);
+            if(task != null) {
+                if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
+                        updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
+                    if (task.isWritten && task.lineIndex >= 0) {
+                        if (pendingRemoval == null)
+                            pendingRemoval = new TreeSet<UpdateTask>();
+                        pendingRemoval.add(task);
+                    } else {
+                        updateTasks.remove(task);
+                    }
                 }
             }
         }
@@ -126,7 +130,9 @@ public class UpdateManager {
             int idx = 0;
             while ((line = br.readLine()) != null) {
                 if(!line.isEmpty() && !line.trim().equals("")){
-                    updateTasks.add(new UpdateTask(idx, line));
+                    UpdateTask task = new UpdateTask(idx, line);
+                    setAccessPoint(task);
+                    updateTasks.add(task);
                 }
                 idx++;
             }
@@ -142,22 +148,55 @@ public class UpdateManager {
             }
         }
     }
+    private void setAccessPoint(UpdateTask task) {
+
+        Cursor cursor = mApplicationContext.getContentResolver().query(
+                WifiContentProvider.CONTENT_URI_PRIVATE,
+                null,
+                WifiDbOpenHelper.COLUMN_BSSID + "=\"" + task.bssid + "\" AND " +
+                        WifiDbOpenHelper.COLUMN_PRIVACY + "=" + task.privacyType,
+                null,
+                null
+        );
+        if (!cursor.isAfterLast()) { //found
+            Log.d(TAG, "SetAccessPoint cursor len: " + cursor.getCount());
+            cursor.moveToNext();
+            AccessPoint ap = new AccessPoint(
+                    cursor.getInt(cursor.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID)),
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER)),
+                    null,
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_BSSID)),
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)),
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_SECURITY)),
+                    cursor.getInt(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY)),
+                    cursor.getDouble(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
+                    cursor.getDouble(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LON)),
+                    cursor.getString(cursor.getColumnIndex(WifiDbOpenHelper.COLUMN_LASTACCESS))
+            );
+            task.accessPoint = ap;
+        } else {
+            Log.e(TAG, "AP NOT FOUND");
+        }
+    }
     public void writePendingUpdates(){
         // TODO: Remove task from the local file
         try {
-            FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-            for(UpdateTask task:updateTasks){
-                if(!pendingRemoval.contains(task)){
-                    task.isWritten = true;
-                    bw.append(task.toString()).append("\n");
+            if(updateTasks.size() > 0) {
+                FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+                for (UpdateTask task : updateTasks) {
+                    if (!pendingRemoval.contains(task)) {
+                        task.isWritten = true;
+                        bw.append(task.toString()).append("\n");
+                    }
                 }
+                bw.close();
+                fos.close();
+                updateTasks.removeAll(pendingRemoval);
+                pendingRemoval = new TreeSet<UpdateTask>();
             }
-            bw.close();
-            fos.close();
-
-            updateTasks.removeAll(pendingRemoval);
-            pendingRemoval = new TreeSet<UpdateTask>();
         } catch (IOException e) {
             e.printStackTrace();
             Log.d(TAG, "Application directory missing probably");
@@ -219,7 +258,7 @@ public class UpdateManager {
         public static enum UpdateType {INSERT, UPDATE, DELETE}
         public int lineIndex;
         public UpdateType updateType;
-        public int internalId;
+        public String bssid;
         public int privacyType;
         public AccessPoint accessPoint;
         public boolean isWritten;
@@ -239,15 +278,7 @@ public class UpdateManager {
             }
             updateType = UpdateType.values()[type];
 
-            int intId;
-            try {
-                intId = Integer.parseInt(lineOpts[1]);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Cannot create UpdateTask due to internalId format error");
-            }
-            internalId = intId;
-
+            bssid = lineOpts[1];
             int privType;
             try {
                 privType= Integer.parseInt(lineOpts[2]);
@@ -260,21 +291,19 @@ public class UpdateManager {
             // TODO: Read the AP from the database
             isWritten = true;
         }
-
         public UpdateTask(int lineIndex, UpdateType updateType, AccessPoint accessPoint, boolean isWritten){
             this.lineIndex = lineIndex;
             this.updateType = updateType;
-            this.internalId = accessPoint.getInternalId();
+            this.bssid= accessPoint.getBssid();
             this.privacyType = accessPoint.getPrivacyType();
             this.accessPoint = accessPoint;
             this.isWritten = isWritten;
         }
-
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(updateType.ordinal()).append(" ");
-            sb.append(internalId).append(" ");
+            sb.append(bssid).append(" ");
             sb.append(privacyType).append(" ");
             return sb.toString();
         }
@@ -286,7 +315,7 @@ public class UpdateManager {
 
             UpdateTask that = (UpdateTask) o;
 
-            if (internalId != that.internalId) return false;
+            if (bssid != null && !bssid.equals(that.bssid)) return false;
             if (updateType != that.updateType) return false;
             if (privacyType != that.privacyType) return false;
             if (accessPoint != null && !accessPoint.equals(that.accessPoint)) return false;
@@ -297,7 +326,7 @@ public class UpdateManager {
         @Override
         public int hashCode() {
             int result = updateType != null ? updateType.hashCode() : 0;
-            result = 31 * result + internalId;
+            result = 31 * result + (bssid != null ? bssid.hashCode() : 0);
             result = 31 * result + (accessPoint != null ? accessPoint.hashCode() : 0);
             return result;
         }
@@ -322,7 +351,7 @@ public class UpdateManager {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(lineIndex);
             dest.writeInt(updateType.ordinal());
-            dest.writeInt(internalId);
+            dest.writeString(bssid);
             dest.writeInt(privacyType);
             dest.writeParcelable(accessPoint, 0);
             dest.writeInt(isWritten ? 1 : 0);
@@ -342,7 +371,7 @@ public class UpdateManager {
         public UpdateTask(Parcel parc){
             lineIndex = parc.readInt();
             updateType = UpdateType.values()[parc.readInt()];
-            internalId = parc.readInt();
+            bssid = parc.readString();
             privacyType = parc.readInt();
             accessPoint = parc.readParcelable(getClass().getClassLoader());
             isWritten = parc.readInt() == 1;

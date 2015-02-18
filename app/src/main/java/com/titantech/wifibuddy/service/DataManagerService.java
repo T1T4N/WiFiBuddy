@@ -124,6 +124,9 @@ public class DataManagerService extends IntentService {
     private void putAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
         final AccessPoint ap = updateTask.accessPoint;
         final Context ctx = this;
+        if(ap == null) {
+            Log.e(TAG, "AccessPoint is NULL");
+        }
         String requestUrl = getString(R.string.url_edit_ap) + ap.getId();
         HashMap<String, String> putData = new HashMap<String, String>();
         putData.put("name", ap.getName());
