@@ -51,6 +51,17 @@ public class UpdateManager {
             if(task != null) {
                 if (updateResult != Constants.SERVICE_RESULT_UNREACHABLE &&
                         updateResult != Constants.SERVICE_RESULT_UNAUTHORIZED) {
+                    if(task.updateType == UpdateTask.UpdateType.INSERT){
+                        // Update the local AP externalId with the one received from the server
+                        if(task.accessPoint == null) {
+                            Log.e(TAG, "Result AP is null");
+                        } else {
+                            mApplicationContext.getContentResolver()
+                                    .update(task.accessPoint.getContentUriFromPrivacy(),
+                                            task.accessPoint.toContentValues(), null, null);
+                        }
+                    }
+
                     if (task.isWritten) {
                         if (pendingRemoval == null)
                             pendingRemoval = new TreeSet<UpdateTask>();

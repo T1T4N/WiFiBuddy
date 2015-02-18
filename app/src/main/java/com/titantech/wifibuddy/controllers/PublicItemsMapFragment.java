@@ -71,11 +71,6 @@ public class PublicItemsMapFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            // mParam1 = getArguments().getString(ARG_PARAM1);
-            // mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -93,11 +88,12 @@ public class PublicItemsMapFragment extends Fragment
                 mMapFragment = PublicMapFragment.newInstance();
                 getChildFragmentManager().beginTransaction().replace(R.id.map_public, mMapFragment).commit();
             }
-        }, 180);
+        }, 200);
     }
 
     @Override
     public void onMapReady() {
+        Log.d(TAG, "Map is ready, initializing loader");
         getLoaderManager().initLoader(Constants.LOADER_PUBLIC_ID, null, this);
     }
 
@@ -108,11 +104,13 @@ public class PublicItemsMapFragment extends Fragment
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean netEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if (!gpsEnabled && !netEnabled) {
-            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
+        if(gpsEnabled) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, this);
         }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, this);
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1000, this);
+        if(netEnabled) {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1000, this);
+        }
     }
 
     @Override
@@ -136,7 +134,8 @@ public class PublicItemsMapFragment extends Fragment
                     googleMap.setMyLocationEnabled(true);
 
                     while (data.moveToNext()) {
-                        googleMap.addMarker(new MarkerOptions()
+                        googleMap.addMarker(
+                                new MarkerOptions()
                                         .position(new LatLng(
                                                 data.getDouble(data.getColumnIndex(WifiDbOpenHelper.COLUMN_LAT)),
                                                 data.getDouble(data.getColumnIndex(WifiDbOpenHelper.COLUMN_LON))
@@ -145,9 +144,6 @@ public class PublicItemsMapFragment extends Fragment
                                         .snippet(
                                                 "Added by: " + data.getString(data.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER_MAIL))
                                         )
-                                //.icon(
-                                //    BitmapDescriptorFactory.fromResource(android.R.drawable.ic_menu_info_details)
-                                //)
                         );
                         CameraUpdate cameraUpdate = null;
                         Location lastKnownLocationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);

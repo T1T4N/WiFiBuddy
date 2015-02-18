@@ -179,6 +179,8 @@ public class EditActivity extends ActionBarActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setMyLocationEnabled(true);
+
         final LatLng itemLocation = new LatLng(mEditItem.getLatitude(), mEditItem.getLongitude());
         mItemMarker = googleMap.addMarker(new MarkerOptions()
                 .position(itemLocation)

@@ -182,6 +182,7 @@ public class WifiContentProvider extends ContentProvider {
         long id;
         switch (uriType) {
             case PUBLIC_MULTIPLE:
+                // TODO: Change to CONFLICT_IGNORE when done testing
                 id = db.insertWithOnConflict(WifiDbOpenHelper.TABLE_PUBLIC, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 getContext().getContentResolver().notifyChange(uri, null);
                 if(values.getAsString(WifiDbOpenHelper.COLUMN_PUBLISHER).equals(Utils.getAuthenticatedUser().getUserId())){

@@ -51,13 +51,13 @@ AccessPointSchema.pre("save", function(next) {
   if(ap.privacyType != 1) {
     AccessPointModel.findOne({bssid : this.bssid}, 'bssid', function(err, results) {
         if(err) {
-          console.log("AccessPoint findOne error " + err);
+          console.log("AccessPoint preSave: findOne error " + err);
           next(err);
         } else if(results) {
           ap.invalidate("bssid", "BSSID must be unique");
           next(new Error("BSSID must be unique"));
         } else {
-          console.log("AccessPoint findOne OK.");
+          console.log("AccessPoint preSave: findOne OK.");
           next();
         }
     });
@@ -65,13 +65,13 @@ AccessPointSchema.pre("save", function(next) {
   else {
     AccessPointModel.findOne({publisher : this.publisher, bssid: this.bssid}, function(err, results) {
         if(err) {
-          console.log("AccessPoint findOne error: " + err);
+          console.log("AccessPoint preSave: findOne error: " + err);
           next(err);
         } else if(results) {
           ap.invalidate("bssid", "BSSID must be unique");
           next(new Error("BSSID must be unique"));
         } else {
-          console.log("AccessPoint findOne OK");
+          console.log("AccessPoint preSave: findOne OK");
           next();
         }
     });
