@@ -13,23 +13,23 @@ import com.titantech.wifibuddy.parsers.ResultParser;
  */
 public class RestTask<T> extends AsyncTask<RestRequest, Void, T> {
 
-    private Context context;
-    private ResultParser<T> parser;
-    private ResultListener<T> listener;
+    private Context mContext;
+    private ResultParser<T> mParser;
+    private ResultListener<T> mListener;
 
     public RestTask(Context context, ResultParser<T> parser, ResultListener<T> listener) {
         super();
-        this.context = context;
-        this.parser = parser;
+        this.mContext = context;
+        this.mParser = parser;
 
-        // Usually the service acts as a listener
-        this.listener = listener;
+        // Usually the service acts as a mListener
+        this.mListener = listener;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        context.sendBroadcast(new Intent(Constants.TASK_STARTED));
+        mContext.sendBroadcast(new Intent(Constants.TASK_STARTED));
     }
 
 
@@ -39,17 +39,17 @@ public class RestTask<T> extends AsyncTask<RestRequest, Void, T> {
             RestRequest request = params[0];
             try {
                 String content = request.getJson();
-                return parser.parseResult(content);
+                return mParser.parseResult(content);
             } catch (Exception e) {
                 Intent exceptionIntent = new Intent(Constants.TASK_EXCEPTION_OCCURRED);
                 exceptionIntent.putExtra("exception", e);
 
-                context.sendBroadcast(exceptionIntent);
+                mContext.sendBroadcast(exceptionIntent);
                 e.printStackTrace();
                 return null;
             }
         } else {
-            context.sendBroadcast(new Intent(Constants.TASK_URL_NOT_PROVIDED));
+            mContext.sendBroadcast(new Intent(Constants.TASK_URL_NOT_PROVIDED));
             return null;
         }
     }
@@ -57,7 +57,7 @@ public class RestTask<T> extends AsyncTask<RestRequest, Void, T> {
     @Override
     protected void onPostExecute(T result) {
         super.onPostExecute(result);
-        listener.onDownloadResult(result);
-        context.sendBroadcast(new Intent(Constants.TASK_COMPLETED));
+        mListener.onResultReceived(result);
+        mContext.sendBroadcast(new Intent(Constants.TASK_COMPLETED));
     }
 }

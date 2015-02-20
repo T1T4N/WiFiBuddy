@@ -25,7 +25,7 @@
         android:layout_marginTop="@dimen/tile_padding_top_3row"
         android:layout_marginStart="@dimen/tile_padding_side"
         android:layout_marginEnd="@dimen/tile_padding_side"
-        android:text="@string/placeholder_text"
+        android:text="@string/debug_placeholder"
         android:textSize="16sp"
         android:textColor="@android:color/black"/>
 
@@ -47,7 +47,7 @@
         android:layout_toEndOf="@id/private_label_password"
         android:layout_marginStart="@dimen/tile_padding_small"
         android:layout_marginEnd="@dimen/tile_padding_side"
-        android:text="@string/placeholder_text"
+        android:text="@string/debug_placeholder"
         android:textSize="14sp"/>
 
     <TextView

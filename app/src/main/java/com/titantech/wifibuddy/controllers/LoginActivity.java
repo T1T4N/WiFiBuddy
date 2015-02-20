@@ -139,7 +139,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         RestRequest registerRequest = new PostRestRequest(mRegisterUrl, postData);
         mAuthTask = new RestTask<User>(this, new UserResultParser(), new ResultListener<User>() {
             @Override
-            public void onDownloadResult(User result) {
+            public void onResultReceived(User result) {
                 mAuthTask = null;
                 showProgress(false);
                 if (result.equals(User.nullUser())) {
@@ -171,7 +171,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         RestRequest authRequest = new GetRestRequest(mAuthUrl, email, password);
         mAuthTask = new RestTask<User>(this, new UserResultParser(), new ResultListener<User>() {
             @Override
-            public void onDownloadResult(User result) {
+            public void onResultReceived(User result) {
                 mAuthTask = null;
                 showProgress(false);
                 if (result.equals(User.nullUser())) {

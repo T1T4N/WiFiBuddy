@@ -3,8 +3,11 @@ package com.titantech.wifibuddy.controllers;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +19,24 @@ import android.widget.Toast;
 import com.shamanland.fab.FloatingActionButton;
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
+import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.Constants;
 import com.titantech.wifibuddy.models.User;
 import com.titantech.wifibuddy.models.Utils;
+import com.titantech.wifibuddy.models.tasks.EntriesCountFetchTask;
 import com.titantech.wifibuddy.network.RestTask;
 import com.titantech.wifibuddy.network.ResultListener;
 import com.titantech.wifibuddy.network.requests.PutRestRequest;
 import com.titantech.wifibuddy.parsers.UserResultParser;
+import com.titantech.wifibuddy.provider.WifiContentProvider;
 
 /**
  * Created by Robert on 24.01.2015.
  */
 public class ProfileFragment extends Fragment
-    implements View.OnClickListener {
+    implements View.OnClickListener, ResultListener<Integer[]> {
+
+    private static final String TAG = "PROFILE_FRAGMENT";
     private SectionChangedListener mSectionChangedListener;
     private LinearLayout mSectionEmail, mSectionPassword, mSectionRepeat1, mSectionRepeat2;
     private EditText mFieldEmail, mFieldPasswordCurrent, mFieldRepeat1, mFieldRepeat2;
@@ -52,12 +60,6 @@ public class ProfileFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            // mParam1 = getArguments().getString(ARG_PARAM1);
-            // mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
         mFabClicked = false;
     }
 
@@ -81,15 +83,35 @@ public class ProfileFragment extends Fragment
         mCountPublic = (TextView) rootView.findViewById(R.id.profile_field_count_public);
 
         mFloatingButton.setOnClickListener(this);
-        fillFields();
         return rootView;
     }
 
-    private void fillFields() {
-        User authUser = Utils.getAuthenticatedUser();
-        mFieldEmail.setText(authUser.getEmail());
-        mFieldPasswordCurrent.setText(authUser.getPassword());
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        fillFields();
+    }
 
+    private void fillFields() {
+        try {
+            User authUser = Utils.getAuthenticatedUser();
+            mFieldEmail.setText(authUser.getEmail());
+            mFieldPasswordCurrent.setText(authUser.getPassword());
+
+            final Context ctx = getActivity();
+            EntriesCountFetchTask countFetchTask = new EntriesCountFetchTask(ctx, this);
+            countFetchTask.execute();
+        } catch (Exception ex) {
+            Log.d(TAG, ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onResultReceived(Integer[] result) {
+        mCountPrivate.setText(String.valueOf(result[0]));
+        mCountPublic.setText(String.valueOf(result[1]));
     }
 
     @Override
@@ -166,7 +188,7 @@ public class ProfileFragment extends Fragment
 
         RestTask<User> updateTask = new RestTask<User>(getActivity(), new UserResultParser(), new ResultListener<User>() {
             @Override
-            public void onDownloadResult(User result) {
+            public void onResultReceived(User result) {
                 if (result.equals(User.nullUser())) {
                     Toast.makeText(getActivity(),
                         getString(R.string.profile_error_connection) + "\n" +

@@ -29,7 +29,6 @@ public class Constants {
 
     public static final int SERVICE_ACTION_GET_PUBLIC = 317;
     public static final int SERVICE_ACTION_GET_PRIVATE = 318;
-    public static final int SERVICE_ACTION_PUT = 319;
     public static final int SERVICE_ACTION_BATCH_TASKS = 320;
 
     public static final int SERVICE_RESULT_UNREACHABLE = -2;

@@ -12,7 +12,7 @@
         android:layout_marginTop="@dimen/tile_padding_top_3row"
         android:layout_marginStart="@dimen/tile_padding_side"
         android:layout_marginEnd="@dimen/tile_padding_side_icon"
-        android:text="@string/placeholder_text"
+        android:text="@string/debug_placeholder"
         android:textSize="16sp"
         android:textColor="@android:color/black"/>
 
@@ -42,7 +42,7 @@
         android:layout_below="@+id/scan_field_name"
         android:layout_toEndOf="@+id/scan_label_password"
         android:layout_marginStart="@dimen/tile_padding_small"
-        android:text="@string/placeholder_text"
+        android:text="@string/debug_placeholder"
         android:textSize="14sp"/>
 
     <TextView
@@ -62,7 +62,7 @@
         android:layout_toEndOf="@id/scan_label_publisher"
         android:layout_below="@+id/scan_field_password"
         android:layout_marginBottom="@dimen/tile_padding_bottom"
-        android:text="@string/placeholder_text"
+        android:text="@string/debug_placeholder"
         android:textSize="14sp"/>
 
 </RelativeLayout>

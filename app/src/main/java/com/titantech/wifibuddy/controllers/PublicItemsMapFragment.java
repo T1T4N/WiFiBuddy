@@ -88,7 +88,7 @@ public class PublicItemsMapFragment extends Fragment
                 mMapFragment = PublicMapFragment.newInstance();
                 getChildFragmentManager().beginTransaction().replace(R.id.map_public, mMapFragment).commit();
             }
-        }, 200);
+        }, 220);
     }
 
     @Override
@@ -161,6 +161,7 @@ public class PublicItemsMapFragment extends Fragment
                         }
                         googleMap.animateCamera(cameraUpdate);
                     }
+                    data.moveToPosition(-1);
                 }
             });
         } else {

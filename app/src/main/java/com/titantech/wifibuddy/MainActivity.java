@@ -51,6 +51,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         User usr = getCredentials();
         if (usr.equals(User.genericUnauthorized())) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -67,7 +68,6 @@ public class MainActivity extends ActionBarActivity
         }
 
     }
-
     private void setupNavigationDrawer() {
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -203,12 +203,12 @@ public class MainActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        /*
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
+        */
         return super.onOptionsItemSelected(item);
     }
 
@@ -248,5 +248,11 @@ public class MainActivity extends ActionBarActivity
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        Log.d(TAG, "onLowMemory called");
     }
 }

@@ -9,6 +9,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,29 +129,63 @@ public class EditActivity extends ActionBarActivity
     }
 
     private void updateAccessPoint() {
-        AccessPoint oldAp = new AccessPoint(mEditItem);
-        mEditItem.setName(mFieldName.getText().toString());
-        mEditItem.setPassword(mFieldPassword.getText().toString());
-        mEditItem.setPrivacyType(mFieldPrivacy.getSelectedItemPosition());
-        mEditItem.setLatitude(mItemMarker.getPosition().latitude);
-        mEditItem.setLongitude(mItemMarker.getPosition().longitude);
-        mEditItem.setLastAccessed(new Date());
+        if(validateFields()) {
+            AccessPoint oldAp = new AccessPoint(mEditItem);
+            mEditItem.setName(mFieldName.getText().toString());
+            mEditItem.setPassword(mFieldPassword.getText().toString());
+            mEditItem.setPrivacyType(mFieldPrivacy.getSelectedItemPosition());
+            mEditItem.setLatitude(mItemMarker.getPosition().latitude);
+            mEditItem.setLongitude(mItemMarker.getPosition().longitude);
+            mEditItem.setLastAccessed(new Date());
 
-        if(mEdit) {
-            if(!oldAp.equals(mEditItem)) {  // If change occurred
-                if (oldAp.getPrivacyType() == mEditItem.getPrivacyType()) {
-                    UpdateManager.getInstance().queueUpdate(mEditItem);
-                } else {    // Need to remove the entry from the previous table and insert it in the new
-                    UpdateManager.getInstance().queueDelete(oldAp);
-                    UpdateManager.getInstance().queueInsert(mEditItem);
+            if (mEdit) {
+                if (!oldAp.equals(mEditItem)) {  // If change occurred
+                    if (oldAp.getPrivacyType() == mEditItem.getPrivacyType()) {
+                        UpdateManager.getInstance().queueUpdate(mEditItem);
+                    } else {    // Need to remove the entry from the previous table and insert it in the new
+                        UpdateManager.getInstance().queueDelete(oldAp);
+                        UpdateManager.getInstance().queueInsert(mEditItem);
+                    }
                 }
+            } else {
+                if (mEditItem.getPrivacyType() == 1) {   // Private items have no publisher mail in the db
+                    mEditItem.setPublisherMail(null);
+                }
+                UpdateManager.getInstance().queueInsert(mEditItem);
             }
-        } else {
-            if(mEditItem.getPrivacyType() == 1) {   // Private items have no publisher mail in the db
-                mEditItem.setPublisherMail(null);
-            }
-            UpdateManager.getInstance().queueInsert(mEditItem);
+            finish();
         }
+    }
+
+    public boolean validateFields() {
+        mFieldName.setError(null);
+        mFieldPassword.setError(null);
+
+        // Store values at the time of the save attempt.
+        String name = mFieldName.getText().toString();
+        String password = mFieldPassword.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) || password.length() < 5) {
+            mFieldPassword.setError(getString(R.string.error_invalid_password));
+            focusView = mFieldPassword;
+            cancel = true;
+        }
+
+        // Check for a valid name.
+        if (TextUtils.isEmpty(name)) {
+            mFieldName.setError(getString(R.string.error_field_required));
+            focusView = mFieldName;
+            cancel = true;
+        }
+
+        if (cancel) {
+            focusView.requestFocus();
+        }
+        return !cancel;
     }
 
     @Override
@@ -162,10 +197,11 @@ public class EditActivity extends ActionBarActivity
                 return true;
             case R.id.action_save:
                 updateAccessPoint();
-                finish();
                 return true;
+            /*
             case R.id.action_settings:
                 return true;
+            */
         }
         return super.onOptionsItemSelected(item);
     }

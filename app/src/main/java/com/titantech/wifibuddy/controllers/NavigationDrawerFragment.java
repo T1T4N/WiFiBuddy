@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.titantech.wifibuddy.R;
 
@@ -44,12 +43,14 @@ public class NavigationDrawerFragment extends Fragment {
      * Remember the position of the selected item.
      */
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
+    private static final String STATE_SELECTED_TYPE = "selected_navigation_drawer_type";
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
+    private static final String TAG = "NAVIGATION_DRAWER";
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -71,6 +72,7 @@ public class NavigationDrawerFragment extends Fragment {
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
+    private boolean mCurrentSelectedType = false;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -85,14 +87,6 @@ public class NavigationDrawerFragment extends Fragment {
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
-        }
-
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition, false);
     }
 
     @Override
@@ -111,6 +105,12 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState != null) {
+            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION, 0);
+            mCurrentSelectedType = savedInstanceState.getBoolean(STATE_SELECTED_TYPE, false);
+            mFromSavedInstanceState = true;
+        }
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
 
@@ -123,12 +123,16 @@ public class NavigationDrawerFragment extends Fragment {
 
         NavigationDrawerAdapter drawerItemsAdapter = new NavigationDrawerAdapter(
             getActivity(),
-            drawerItems
+            drawerItems,
+            mCurrentSelectedPosition
         );
         mDrawerListView.setAdapter(drawerItemsAdapter);
         mDrawerListView.setOnItemClickListener(drawerItemsAdapter);
         mDrawerListView.setOnItemLongClickListener(drawerItemsAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+        // Select either the default item (0) or the last selected item.
+        selectItem(mCurrentSelectedPosition, mCurrentSelectedType);
     }
 
     public boolean isDrawerOpen() {
@@ -212,6 +216,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void selectItem(int position, boolean longClick) {
         mCurrentSelectedPosition = position;
+        mCurrentSelectedType = longClick;
+
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
@@ -239,10 +245,12 @@ public class NavigationDrawerFragment extends Fragment {
         mCallbacks = null;
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putBoolean(STATE_SELECTED_TYPE, mCurrentSelectedType);
     }
 
     @Override
@@ -283,13 +291,20 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
+        if(actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            actionBar.setTitle(R.string.app_name);
+        } else {
+            Log.e(TAG, "ActionBar is null");
+        }
     }
 
     private ActionBar getActionBar() {
-        return ((ActionBarActivity) getActivity()).getSupportActionBar();
+        Activity activity = getActivity();
+        if(activity != null)
+            return ((ActionBarActivity) activity).getSupportActionBar();
+        return null;
     }
 
     /**
@@ -323,11 +338,11 @@ public class NavigationDrawerFragment extends Fragment {
         private int mResource;
         private int mSelectedPosition;
 
-        public NavigationDrawerAdapter(Context context, List<NavigationDrawerItem> data) {
+        public NavigationDrawerAdapter(Context context, List<NavigationDrawerItem> data, int initialSelectedPosition) {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             this.mResource = R.layout.item_navigation_drawer;
             this.data = data;
-            this.mSelectedPosition = 0;
+            this.mSelectedPosition = initialSelectedPosition;
         }
 
         @Override
@@ -385,12 +400,14 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mSelectedPosition = position;
+            mCurrentSelectedType = false;
             selectItem(position, false);
         }
 
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             mSelectedPosition = position;
+            mCurrentSelectedType = true;
             selectItem(position, true);
             return true;
         }

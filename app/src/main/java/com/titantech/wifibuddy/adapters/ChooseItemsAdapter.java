@@ -59,10 +59,18 @@ public class ChooseItemsAdapter extends BaseAdapter {
         }
         ScanResult sr = mItems.get(position);
         viewHolder.apName.setText(sr.SSID);
-        viewHolder.apSecurity.setText(sr.capabilities);
+        viewHolder.apSecurity.setText(formatSecurity(sr.capabilities));
 
         return convertView;
     }
+    public static String formatSecurity(String securityCapabilities){
+        if(securityCapabilities.contains("WPA2-PSK")) return "WPA2-PSK";
+        if(securityCapabilities.contains("WPA-PSK")) return "WPA-PSK";
+        if(securityCapabilities.contains("WEP")) return "WEP";
+
+        return securityCapabilities; // Should never happen
+    }
+
     public void add(ScanResult item) {
         mItems.add(item);
         notifyDataSetChanged();

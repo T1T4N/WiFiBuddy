@@ -83,7 +83,7 @@ public class DataManagerService extends IntentService {
         RestTask<List<AccessPoint>> fetchTaskPublic = new RestTask<List<AccessPoint>>(
             this, new AccessPointsGetParser(true), new ResultListener<List<AccessPoint>>() {
             @Override
-            public void onDownloadResult(List<AccessPoint> result) {
+            public void onResultReceived(List<AccessPoint> result) {
                 if (result != null && !result.equals(Collections.emptyList())) {
                     for (AccessPoint item : result) {
                         getContentResolver().insert(
@@ -105,7 +105,7 @@ public class DataManagerService extends IntentService {
         RestTask<List<AccessPoint>> fetchTaskPrivate = new RestTask<List<AccessPoint>>(
             this, new AccessPointsGetParser(false), new ResultListener<List<AccessPoint>>() {
             @Override
-            public void onDownloadResult(List<AccessPoint> result) {
+            public void onResultReceived(List<AccessPoint> result) {
                 if (result != null && !result.equals(Collections.emptyList())) {
                     for (AccessPoint item : result) {
                         if (item.getPrivacyType() == 1) {
@@ -132,35 +132,39 @@ public class DataManagerService extends IntentService {
         final Context ctx = this;
         if(ap == null) {
             Log.e(TAG, "AccessPoint is NULL");
+            Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
+            intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, 0);
+            intent.putExtra(Constants.SERVICE_UPDATE_RESULT_TASK, updateTask);
+        } else {
+            String requestUrl = getString(R.string.url_instance_ap) + ap.getId();
+            HashMap<String, String> putData = new HashMap<String, String>();
+            putData.put("name", ap.getName());
+            putData.put("password", ap.getPassword());
+            putData.put("securityType", ap.getSecurityType());
+            putData.put("privacyType", String.valueOf(ap.getPrivacyType()));
+            putData.put("lat", String.valueOf(ap.getLatitude()));
+            putData.put("lon", String.valueOf(ap.getLongitude()));
+            putData.put("lastAccessed", Utils.formatDate(ap.getLastAccessed()));
+
+            RestRequest request = new PutRestRequest(requestUrl, putData, authUser.getEmail(), authUser.getPassword());
+            RestTask<Integer> putTaskPrivate = new RestTask<Integer>(this, new AccessPointPutParser(), new ResultListener<Integer>() {
+                @Override
+                public void onResultReceived(Integer result) {
+                    if (result == Constants.SERVICE_RESULT_UNREACHABLE)
+                        Log.e(TAG, "Couldn't communicate with server");
+                    if (result == Constants.SERVICE_RESULT_UNAUTHORIZED)
+                        Log.e(TAG, "You are not an owner of this AP");
+
+                    // result == number of affected rows
+                    Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
+                    intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, result);
+                    intent.putExtra(Constants.SERVICE_UPDATE_RESULT_TASK, updateTask);
+                    ctx.sendBroadcast(intent);
+                }
+            });
+            ctx.sendBroadcast(new Intent(Constants.SERVICE_UPDATE_STARTED));
+            putTaskPrivate.execute(request);
         }
-        String requestUrl = getString(R.string.url_instance_ap) + ap.getId();
-        HashMap<String, String> putData = new HashMap<String, String>();
-        putData.put("name", ap.getName());
-        putData.put("password", ap.getPassword());
-        putData.put("securityType", ap.getSecurityType());
-        putData.put("privacyType", String.valueOf(ap.getPrivacyType()));
-        putData.put("lat", String.valueOf(ap.getLatitude()));
-        putData.put("lon", String.valueOf(ap.getLongitude()));
-        putData.put("lastAccessed", Utils.formatDate(ap.getLastAccessed()));
-
-        RestRequest request = new PutRestRequest(requestUrl, putData, authUser.getEmail(), authUser.getPassword());
-        RestTask<Integer> putTaskPrivate = new RestTask<Integer>(this, new AccessPointPutParser(), new ResultListener<Integer>() {
-            @Override
-            public void onDownloadResult(Integer result) {
-                if (result == Constants.SERVICE_RESULT_UNREACHABLE)
-                    Log.e(TAG, "Couldn't communicate with server");
-                if (result == Constants.SERVICE_RESULT_UNAUTHORIZED)
-                    Log.e(TAG, "You are not an owner of this AP");
-
-                // result == number of affected rows
-                Intent intent = new Intent(Constants.SERVICE_UPDATE_COMPLETED);
-                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, result);
-                intent.putExtra(Constants.SERVICE_UPDATE_RESULT_TASK, updateTask);
-                ctx.sendBroadcast(intent);
-            }
-        });
-        ctx.sendBroadcast(new Intent(Constants.SERVICE_UPDATE_STARTED));
-        putTaskPrivate.execute(request);
     }
 
     private void deleteAccessPoint(final User authUser, final UpdateManager.UpdateTask updateTask) {
@@ -173,7 +177,7 @@ public class DataManagerService extends IntentService {
         RestRequest request = new DeleteRestRequest(requestUrl, authUser.getEmail(), authUser.getPassword());
         RestTask<String> deleteTaskPrivate = new RestTask<String>(this, new AccessPointDeleteParser(), new ResultListener<String>() {
             @Override
-            public void onDownloadResult(String result) {
+            public void onResultReceived(String result) {
                 Integer status = null;
                 try {
                     status = Integer.parseInt(result);
@@ -217,7 +221,7 @@ public class DataManagerService extends IntentService {
         RestTask<AccessPoint> postTaskPrivate = new RestTask<AccessPoint>(this, new AccessPointPostParser(), new ResultListener<AccessPoint>() {
 
             @Override
-            public void onDownloadResult(AccessPoint result) {
+            public void onResultReceived(AccessPoint result) {
                 int res = 0;
                 if (result == null) {
                     Log.e(TAG, "Couldn't communicate with server");

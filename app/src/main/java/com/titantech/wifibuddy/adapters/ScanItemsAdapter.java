@@ -1,6 +1,5 @@
 package com.titantech.wifibuddy.adapters;
 
-import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.content.IntentFilter;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.nfc.Tag;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +30,8 @@ import java.util.List;
  */
 public class ScanItemsAdapter extends BaseAdapter
     implements AdapterView.OnItemClickListener {
+
+    private static final String TAG = "SCAN_ADAPTER";
     private List<QueryResult> mItems;
     private Context mContext;
     private LayoutInflater mInflater;
@@ -108,7 +108,7 @@ public class ScanItemsAdapter extends BaseAdapter
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         QueryResult item = mItems.get(position);
         AccessPoint ap = item.mAccessPoint;
-        Log.d("WIFI", "trying to connect");
+        Log.d(TAG, " WIFI: Trying to connect");
 
         String bssid = ap.getBssid();
         String ssid = ap.getName();
@@ -119,53 +119,72 @@ public class ScanItemsAdapter extends BaseAdapter
             ssid = item.mScanName;
         }
         if(item.isBssidDifferent && item.isNameDifferent){
-            Log.e("SCAN_ADAPTER", "ERROR: Item's BSSID and Name are BOTH different");
+            Log.e(TAG, "ERROR: Item's BSSID and Name are BOTH different");
         }
 
         WifiConfiguration wc = new WifiConfiguration();
         wc.BSSID = bssid;
         wc.SSID = "\"" + ssid + "\"";
-        // TODO: WEP Keys implementation ?
-        wc.preSharedKey = "\"" + ap.getPassword() + "\"";
+
+        if(!ap.getSecurityType().contains("WEP")){
+            wc.preSharedKey = "\"" + ap.getPassword() + "\"";
+        } else {
+            wc.wepKeys = new String[] {"\"" + ap.getPassword() + "\""};
+            wc.wepTxKeyIndex = 0;
+        }
 
         wc.status = WifiConfiguration.Status.ENABLED;
+
         wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
         wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+
         wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
         wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
         wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
         wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
 
         int netId = mWifiManager.addNetwork(wc);
 
         if (!mWifiManager.disconnect()) {
-            Log.d("WIFI", "Failed to disconnect");
+            Log.d(TAG, "Failed to disconnect");
         }
         if (!mWifiManager.enableNetwork(netId, true)) {
-            Log.d("WIFI", "Failed to enable network");
+            Log.d(TAG, "Failed to enable network");
         }
+
+        // Delayed execution so that we do not receive any of the old SupplicantStates
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 mContext.registerReceiver(mStatusReceiver, mIntentFilter);
                 if (!mWifiManager.reconnect()) {
-                    Log.d("WIFI", "Failed to reconnect");
+                    Log.d(TAG, "Failed to reconnect");
                 }
             }
         }, 800);
     }
 
-    private void onConnectionError() {
+    private void onAuthenticationError() {
         mContext.unregisterReceiver(mStatusReceiver);
         String msg = mContext.getString(R.string.scan_connection_error);
         Log.i("ERROR_AUTHENTICATING", msg);
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void onConnectionSuccess() {
+    private void onAuthenticationSuccess() {
         mContext.unregisterReceiver(mStatusReceiver);
         String msg = mContext.getString(R.string.scan_connection_success);
         Log.i("AUTHENTICATION_SUCCESS", msg);
+        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void onAssociationError() {
+        mContext.unregisterReceiver(mStatusReceiver);
+        String msg = mContext.getString(R.string.scan_association_error);
+        Log.i("ERROR_ASSOCIATING", msg);
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
@@ -175,16 +194,18 @@ public class ScanItemsAdapter extends BaseAdapter
             //context = MainActivity
             String action = intent.getAction();
             if (action.equals(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)) {
-                Log.d("WIFI_STATUS_RECEIVER", "SUPPLICANT_STATE_CHANGED_ACTION");
+                Log.d(TAG, "WIFI_STATUS_RECEIVER: SUPPLICANT_STATE_CHANGED_ACTION");
                 SupplicantState supl_state = (SupplicantState) intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
-                Log.d("WIFI_STATE", supl_state.toString());
+                Log.d(TAG, "WIFI_STATE: " + supl_state.toString());
                 int supl_error = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
-                Log.d("WIFI_ERROR", String.valueOf(supl_error));
+                Log.d(TAG, "WIFI_ERROR: " + String.valueOf(supl_error));
 
                 if (supl_error == WifiManager.ERROR_AUTHENTICATING) {
-                    onConnectionError();
+                    onAuthenticationError();
                 } else if (supl_error == -1 && supl_state == SupplicantState.COMPLETED) {
-                    onConnectionSuccess();
+                    onAuthenticationSuccess();
+                } else if (supl_error == -1 && supl_state == SupplicantState.SCANNING) {
+                    onAssociationError();
                 }
             }
         }

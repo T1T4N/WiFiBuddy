@@ -239,6 +239,9 @@ public class WifiContentProvider extends ContentProvider {
         }
         if (rowsUpdated > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
+            if(uriType == PUBLIC_SINGLE){
+                getContext().getContentResolver().notifyChange(CONTENT_URI_PRIVATE, null);
+            }
         }
         return rowsUpdated;
     }
@@ -281,6 +284,9 @@ public class WifiContentProvider extends ContentProvider {
         }
         if (rowsDeleted > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
+            if(uriType == PUBLIC_SINGLE){
+                getContext().getContentResolver().notifyChange(CONTENT_URI_PRIVATE, null);
+            }
         }
         return rowsDeleted;
     }

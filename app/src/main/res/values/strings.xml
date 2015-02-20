@@ -1,48 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="debug_placeholder">PLACEHOLDER</string>
+
+    <!-- Activity titles -->
     <string name="app_name">WiFi Buddy</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_edit">Edit Access Point</string>
+    <string name="title_activity_add">Add Access Point</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="scan_dialog_title">Enable WiFi connection?</string>
+
+    <!-- Navigation drawer strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_save">Save</string>
-    <string name="action_scan">Scan nearby</string>
-    <string name="placeholder_text">Placeholder Text</string>
-    <string name="header_private">Private Access Points</string>
-    <string name="header_public">Public Access Points</string>
-
-    <string name="profile_email">Email:</string>
-    <string name="profile_password">Current pass:</string>
-    <string name="profile_repeat1_hint">New password</string>
-    <string name="profile_repeat2_hint">Repeat</string>
-    <string name="profile_error_password_change">Password cannot be changed</string>
-    <string name="profile_error_no_connection">No internet connection present</string>
-    <string name="profile_error_connection">@string/error_login_connection</string>
-    <string name="profile_error_unknown">@string/error_login_unknown</string>
-
-    <string name="profile_count_private">Private APs:</string>
-    <string name="profile_count_public">Public APs:</string>
-
-    <string name="label_password">Password:</string>
-    <string name="label_updated">Updated on:</string>
-    <string name="label_publisher">Publisher:</string>
-
-    <string name="scan_progress">Scanning nearby access points</string>
-    <string name="scan_no_results">No results. Check if wireless is on</string>
-    <string name="scan_no_match">Sorry, no matching access points found</string>
-    <string name="scan_none_in_range">No access points in range</string>
-    <string name="scan_not_found_range">No access points that are in range were found</string>
-    <string name="scan_connection_error">Authentication error occurred while connecting to the AP</string>
-    <!-- The network's password might have been changed in the meantime. -->
-    <string name="scan_connection_success">Successfully connected to the AP</string>
-    <string name="scan_bssid_different">The AP\'s id is different from the scan result, but the name is the same</string>
-    <string name="scan_name_different">The AP\'s name is different from the scan result, but the id is the same</string>
-
-    <string name="scan_dialog_title">Enable WiFi connection?</string>
-    <string name="scan_dialog_question">Your WiFi connection seems to be disabled.\nIt is required in order to scan nearby access points.</string>
-    <string name="scan_dialog_action_positive">AGREE</string>
-    <string name="scan_dialog_action_negative">DISAGREE</string>
-
     <string name="choose_dialog_title">Choose WiFi AP to add</string>
     <string-array name="drawer_labels">
         <item>Profile</item>
@@ -50,7 +20,6 @@
         <item>Scan Access Points</item>
         <item>Around Me</item>
     </string-array>
-
     <string-array name="toolbar_titles">
         <item>Profile</item>
         <item>My APs</item>
@@ -58,14 +27,64 @@
         <item>Around Me</item>
     </string-array>
 
-    <string-array name="privacy_types">
-        <item>Public</item>
-        <item>Private</item>
-    </string-array>
+    <!-- Action settings -->
+    <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
+    <string name="action_scan">Scan nearby</string>
 
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_edit">Edit Access Point</string>
-    <string name="title_activity_add">Add Access Point</string>
+    <string name="header_private">Private Access Points</string>
+    <string name="header_public">Public Access Points</string>
 
-    <string name="hello_world">Hello world!</string>
+    <!-- Profile fragment string -->
+    <string name="profile_email">Email:</string>
+    <string name="profile_password">Current pass:</string>
+    <string name="profile_repeat1_hint">New password</string>
+    <string name="profile_repeat2_hint">Repeat</string>
+    <string name="profile_count_private">Private APs:</string>
+    <string name="profile_count_public">Public APs:</string>
+    <string name="profile_error_password_change">Password cannot be changed</string>
+    <string name="profile_error_no_connection">No internet connection present</string>
+    <string name="profile_error_connection">@string/error_login_connection</string>
+    <string name="profile_error_unknown">@string/error_login_unknown</string>
+
+    <!-- List item label strings -->
+    <string name="label_password">Password:</string>
+    <string name="label_updated">Updated on:</string>
+    <string name="label_publisher">Publisher:</string>
+
+    <!-- Scan dialog strings -->
+    <string name="scan_dialog_question">Your WiFi connection seems to be disabled.\nIt is required in order to scan nearby access points.</string>
+    <string name="scan_dialog_action_positive">Agree</string>
+    <string name="scan_dialog_action_negative">Disagree</string>
+    <string name="scan_progress">Scanning nearby access points</string>
+    <string name="scan_no_results">No results. Check if wireless is on</string>
+    <string name="scan_no_match">Sorry, no matching access points found</string>
+    <string name="scan_none_in_range">No access points in range</string>
+    <string name="scan_not_found_range">No access points that are in range were found</string>
+    <!-- The network's password might have been changed in the meantime. -->
+    <string name="scan_connection_error">Authentication error occurred while connecting to the AP</string>
+    <string name="scan_connection_success">Successfully authenticated with the AP</string>
+    <string name="scan_association_error">Association error occurred while connecting to the AP</string>
+
+    <string name="scan_bssid_different">The AP\'s id is different from the scan result, but the name is the same</string>
+    <string name="scan_name_different">The AP\'s name is different from the scan result, but the id is the same</string>
+
+    <!-- Login activity strings -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="profile_change_success">Password changed successfully</string>
+    <string name="login_success">Login successful</string>
+    <string name="register_success">User registered successfully</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_passwords_no_match">The passwords must match</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_login_exists">This email is already registered</string>
+    <string name="error_login_invalid">This email and password combination is invalid</string>
+    <string name="error_login_connection">Connection error occurred</string>
+    <string name="error_login_unknown">An unknown error occurred</string>
+
 </resources>

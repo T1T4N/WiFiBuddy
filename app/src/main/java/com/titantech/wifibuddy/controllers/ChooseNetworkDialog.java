@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.adapters.ChooseItemsAdapter;
+import com.titantech.wifibuddy.adapters.ScanItemsAdapter;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.AccessPoint;
 import com.titantech.wifibuddy.models.Constants;
@@ -84,7 +85,7 @@ public class ChooseNetworkDialog  extends DialogFragment
                 message = getString(R.string.scan_none_in_range);
             } else {
                 for(ScanResult res : results){
-                    if(!isNetworkOwned(res)){
+                    if(isSecurityValid(res.capabilities) && !isNetworkOwned(res)){
                         items.add(res);
                     }
                 }
@@ -101,6 +102,13 @@ public class ChooseNetworkDialog  extends DialogFragment
             mAdapter.addAll(items);
         }
     }
+    private boolean isSecurityValid(String securityCapabilities){
+        if(securityCapabilities.contains("WPA2-PSK")) return true;
+        if(securityCapabilities.contains("WPA-PSK")) return true;
+        if(securityCapabilities.contains("WEP")) return true;
+        return false;
+    }
+
     private void setupLocation() {
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager != null) {
@@ -159,7 +167,7 @@ public class ChooseNetworkDialog  extends DialogFragment
                 sr.BSSID,
                 sr.SSID,
                 "",
-                sr.capabilities,
+                ChooseItemsAdapter.formatSecurity(sr.capabilities),
                 0,
                 mLatitude,
                 mLongitude,

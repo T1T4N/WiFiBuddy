@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="ime_action_login" format="integer">100</integer>
+    <string-array name="privacy_types">
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
 </resources>

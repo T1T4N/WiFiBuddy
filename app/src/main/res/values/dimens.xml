@@ -9,25 +9,26 @@
     <dimen name="navigation_drawer_width">300dp</dimen>
     <dimen name="tile_icon_size">24dp</dimen>
 
+    <!-- Configuration for a list item with 3 rows -->
     <dimen name="tile_height_3row">88dp</dimen>
+    <dimen name="tile_padding_top_3row">16dp</dimen>
+
     <dimen name="tile_height_2row">72dp</dimen>
+    <dimen name="tile_padding_top_2row">20dp</dimen>
+
     <dimen name="tile_height_1row_icon">56dp</dimen>
-    
+    <dimen name="icon_padding_1row_left">16dp</dimen>
+    <dimen name="text_padding_1row_left">72dp</dimen>
+    <dimen name="text_padding_1row_top">16dp</dimen>
+    <dimen name="text_padding_1row_bottom">20dp</dimen>
+
     <dimen name="tile_padding_side">16dp</dimen>
     <dimen name="tile_padding_side_icon">56dp</dimen>
     <dimen name="tile_padding_small">8dp</dimen>
     <dimen name="tile_padding_large">20dp</dimen>
     <dimen name="tile_padding_xlarge">48dp</dimen>
     <dimen name="tile_padding_xxxlarge">72dp</dimen>
-
-    <dimen name="tile_padding_top_3row">16dp</dimen>
-    <dimen name="tile_padding_top_2row">20dp</dimen>
     <dimen name="tile_padding_bottom">20dp</dimen>
-    
-    <dimen name="icon_padding_1row_left">16dp</dimen>
-    <dimen name="text_padding_1row_left">72dp</dimen>
-    <dimen name="text_padding_1row_top">16dp</dimen>
-    <dimen name="text_padding_1row_botton">20dp</dimen>
 
     <dimen name="dialog_content_padding">24dp</dimen>
     <dimen name="dialog_content_padding_bottom">16dp</dimen>
@@ -41,5 +42,4 @@
     <dimen name="map_height">350dp</dimen>
     <dimen name="parallax_offset">200dp</dimen>
     <dimen name="divider_height">1dp</dimen>
-
 </resources>

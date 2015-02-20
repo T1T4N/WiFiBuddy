@@ -90,7 +90,7 @@ router.delete('/:ap_id', authController.isAuthenticated, function(req, res){
   AccessPoint.find({_id: req.params.ap_id, publisher: req.user._id}, function(err, aps){
     if (err)  {
       console.log(err);
-      res.send(err);
+      res.status(422).json({message: err.message});
     }
     else if (!aps || !Array.isArray(aps) || aps.length === 0) {
       console.log('No aps found to remove');
@@ -103,8 +103,8 @@ router.delete('/:ap_id', authController.isAuthenticated, function(req, res){
             user.accesspoints.remove(req.params.ap_id);
             user.save(function(error){
               if (error)  {
-                console.log(err);
-                res.send(error);
+                console.log(error);
+                res.status(422).json({message: error.message});
               } else { 
                 res.json({ message: 'AP removed' });
               }

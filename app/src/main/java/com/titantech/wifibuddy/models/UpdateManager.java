@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -39,12 +40,13 @@ public class UpdateManager {
     private Set<UpdateTask> updateTasks;
     private Set<UpdateTask> pendingRemoval;
     private IntentFilter mFilter;
+    private boolean mFlushed;
 
     private BroadcastReceiver mStatusReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();
+            Log.d(TAG, "STATUS_RECEIVER: " + intent.getAction());
 
             int updateResult = intent.getIntExtra(Constants.SERVICE_UPDATE_RESULT_STATUS, 0);
             UpdateTask task = intent.getParcelableExtra(Constants.SERVICE_UPDATE_RESULT_TASK);
@@ -84,8 +86,6 @@ public class UpdateManager {
         mFilter.addAction(Constants.SERVICE_UPDATE_COMPLETED);
 
         readPreviousUpdates();
-        processTasks();
-        updateDatabase();
     }
 
     private void writeUpdateTime(Date lastUpdate){
@@ -124,34 +124,55 @@ public class UpdateManager {
     }
 
     private void readPreviousUpdates() {
-        try {
-            FileInputStream fis = mApplicationContext.openFileInput(Constants.FILENAME_UPDATES);
-            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-            String line = null;
-            int idx = 0;
-            while ((line = br.readLine()) != null) {
-                if(!line.isEmpty() && !line.trim().equals("")){
-                    UpdateTask task = new UpdateTask(idx, line);
-                    setAccessPoint(task);
-                    updateTasks.add(task);
-                }
-                idx++;
-            }
-            br.close();
-            fis.close();
-        } catch (IOException e) {
-            Log.d(TAG, "No previous queued updates found");
+        PendingUpdatesReader pendingUpdatesReader = new PendingUpdatesReader();
+        pendingUpdatesReader.execute();
+    }
+    private class PendingUpdatesReader extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... params) {
             try {
-                FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
-                fos.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                FileInputStream fis = mApplicationContext.openFileInput(Constants.FILENAME_UPDATES);
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                String line = null;
+                int idx = 0;
+                while ((line = br.readLine()) != null) {
+                    if(!line.isEmpty() && !line.trim().equals("")){
+                        UpdateTask task = new UpdateTask(idx, line);
+                        setAccessPoint(task);
+
+                        // Scenario when the user creates, optionally modifies and then deletes the AP
+                        // while not having internet connection
+                        // These tasks should not be added
+                        if(task.accessPoint != null)
+                            updateTasks.add(task);
+                    }
+                    idx++;
+                }
+                br.close();
+                fis.close();
+            } catch (IOException e) {
+                Log.d(TAG, "No previous queued updates found");
+                try {
+                    FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
+                    fos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            processTasks();
+            updateDatabase();
         }
     }
+
     private void setAccessPoint(UpdateTask task) {
         // In the case with DELETE, the item has already been removed from the local DB, so we can't query
-        if(task.updateType == UpdateTask.UpdateType.DELETE){
+        if(task.updateType == UpdateTask.UpdateType.DELETE) {
             task.accessPoint = new AccessPoint(task.externalId, null, task.bssid, null, null, null, task.privacyType, 0, 0, Utils.formatDate());
         } else {
             Cursor cursor = mApplicationContext.getContentResolver().query(
@@ -183,30 +204,42 @@ public class UpdateManager {
             } else {
                 Log.e(TAG, "AP NOT FOUND");
             }
+            if(cursor != null) cursor.close();
         }
     }
+
+
     public void writePendingUpdates(){
-        // Do not put task in the local file when updating it
-        try {
-            if(updateTasks.size() > 0) {
-                FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
-                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-                for (UpdateTask task : updateTasks) {
-                    if (!pendingRemoval.contains(task)) {
-                        task.isWritten = true;
-                        bw.append(task.toString()).append("\n");
+        PendingUpdatesWriter pendingUpdatesWriter = new PendingUpdatesWriter();
+        pendingUpdatesWriter.execute();
+    }
+    private class PendingUpdatesWriter extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                if(updateTasks.size() > 0) {
+                    FileOutputStream fos = mApplicationContext.openFileOutput(Constants.FILENAME_UPDATES, Context.MODE_PRIVATE);
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+                    for (UpdateTask task : updateTasks) {
+                        // Do not put task in the local file when updating it
+                        if (!pendingRemoval.contains(task)) {
+                            task.isWritten = true;
+                            bw.append(task.toString()).append("\n");
+                        }
                     }
+                    bw.close();
+                    fos.close();
+                    updateTasks.removeAll(pendingRemoval);
+                    pendingRemoval = new TreeSet<UpdateTask>();
                 }
-                bw.close();
-                fos.close();
-                updateTasks.removeAll(pendingRemoval);
-                pendingRemoval = new TreeSet<UpdateTask>();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Application directory probably missing");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(TAG, "Application directory missing probably");
+            return null;
         }
     }
+
     public boolean shouldUpdate(Date timeNow) {
         long diff = timeNow.getTime() - mLastUpdate.getTime();
         long diffMinutes = diff / (60 * 1000); // % 60;
@@ -257,6 +290,7 @@ public class UpdateManager {
     }
 
     public void queueDelete(AccessPoint deletedAp) {
+        // Update local database
         int deletedRowsCount = mApplicationContext.getContentResolver()
             .delete(deletedAp.getContentUriFromPrivacy(), null, null);
 
@@ -355,7 +389,12 @@ public class UpdateManager {
             else if(updateType.ordinal() > another.updateType.ordinal()) {
                 return 1;
             }
-            else return 0;
+            else {
+                if (accessPoint != null && another.accessPoint != null){
+                    return accessPoint.getLastAccessed().compareTo(another.accessPoint.getLastAccessed());
+                }
+                return 0;
+            }
         }
 
         @Override

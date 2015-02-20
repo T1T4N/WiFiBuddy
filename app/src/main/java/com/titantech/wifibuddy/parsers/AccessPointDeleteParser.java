@@ -8,7 +8,7 @@ public class AccessPointDeleteParser implements ResultParser<String> {
     public String parseResult(String content) throws JSONException {
         if (content == null) {
             return String.valueOf(-2);  //Server unreachable
-        } else if (content.equals("401")) {
+        } else if (content.equals("401") || content.equals("422")) {
             return String.valueOf(-1);  //Unauthorized or not owner
         } else {
             JSONObject jsonContent = new JSONObject(content);
