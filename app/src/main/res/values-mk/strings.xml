@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="debug_placeholder">PLACEHOLDER</string>
+
+    <!-- Activity titles -->
+    <string name="app_name">WiFi Buddy</string>
+    <string name="title_activity_maps">Мапа</string>
+    <string name="title_activity_edit">Уреди мрежа</string>
+    <string name="title_activity_add">Додади мрежа</string>
+    <string name="title_activity_login">Најави се</string>
+    <string name="scan_dialog_title">Овозможи WiFi конекција?</string>
+
+    <!-- Navigation drawer strings -->
+    <string name="navigation_drawer_open">Отвори го панелот за навигација</string>
+    <string name="navigation_drawer_close">Затвори го панелот за навигација</string>
+    <string name="choose_dialog_title">Избери WiFi мрежа за додавање</string>
+    <string-array name="drawer_labels">
+        <item>Профил</item>
+        <item>Мои мрежи</item>
+        <item>Скенирај мрежи</item>
+        <item>Околу мене</item>
+    </string-array>
+    <string-array name="toolbar_titles">
+        <item>Профил</item>
+        <item>Мои мрежи</item>
+        <item>Скенирај мрежи</item>
+        <item>Околу мене</item>
+    </string-array>
+
+    <!-- Action settings -->
+    <string name="action_settings">Поставки</string>
+    <string name="action_save">Сними</string>
+    <string name="action_scan">Скенирај во близина</string>
+
+    <string name="header_private">Приватни мрежи</string>
+    <string name="header_public">Јавни мрежи</string>
+
+    <!-- Profile fragment string -->
+    <string name="profile_email">Емаил:</string>
+    <string name="profile_password">Тековна лозинка:</string>
+    <string name="profile_repeat1_hint">Нова лозинка</string>
+    <string name="profile_repeat2_hint">Повтори</string>
+    <string name="profile_count_private">Приватни мрежи:</string>
+    <string name="profile_count_public">Јавни мрежи:</string>
+    <string name="profile_error_password_change">Лозинката неможе да биде променета</string>
+    <string name="profile_error_no_connection">Нема интернет конекција</string>
+    <string name="profile_error_connection">@string/error_login_connection</string>
+    <string name="profile_error_unknown">@string/error_login_unknown</string>
+
+    <!-- List item label strings -->
+    <string name="label_password">Лозинка:</string>
+    <string name="label_updated">Обновена на:</string>
+    <string name="label_publisher">Објавена од:</string>
+
+    <!-- Scan dialog strings -->
+    <string name="scan_dialog_question">Вашата WiFi конекција е оневозможена.\nТаа е потребна за скенирање на мрежи во близина.</string>
+    <string name="scan_dialog_action_positive">Во ред</string>
+    <string name="scan_dialog_action_negative">Откажи</string>
+    <string name="scan_progress">Скенирање мрежи во близина</string>
+    <string name="scan_no_results">Нема резултати. Проверете дали WiFi е вклучено</string>
+    <string name="scan_no_match">Извинете, нема најдени мрежи кои се софпаѓаат</string>
+    <string name="scan_none_in_range">Нема мрежи во опсегот</string>
+    <string name="scan_not_found_range">Нема пронајдени мрежи во опсегот</string>
+    <!-- The network's password might have been changed in the meantime. -->
+    <string name="scan_connection_error">Настана автентификациска грешка поврзувајќи се на мрежата</string>
+    <string name="scan_connection_success">Успешна автентификација со мрежата</string>
+    <string name="scan_association_error">Настана асоцијативна грешка поврзувајќи се на мрежата</string>
+
+    <string name="scan_bssid_different">ИД-то на мрежата е различно од резултатот од скенирањето, но името е исто</string>
+    <string name="scan_name_different">Името на мрежата е различно од резултатот од скенирањето, но ИД-то е исто</string>
+
+    <!-- Login activity strings -->
+    <string name="prompt_email">Емаил</string>
+    <string name="prompt_password">Лозинка</string>
+    <string name="action_sign_in">Најави се</string>
+    <string name="action_register">Регистрирај се</string>
+    <string name="profile_change_success">Лозинката е успешно променета</string>
+    <string name="login_success">Најавувањето е успешно</string>
+    <string name="register_success">Корисникот е регистриран успешно</string>
+    <string name="error_field_required">Ова поле е задолжително</string>
+    <string name="error_invalid_email">Оваа емаил адреса е невалидна</string>
+    <string name="error_invalid_password">Оваа лозинка е премногу кратка</string>
+    <string name="error_passwords_no_match">Лозинките мора да се софпаѓаат</string>
+    <string name="error_incorrect_password">Оваа лозинка е неточна</string>
+    <string name="error_login_exists">Оваа емаил адреса е веќе регистрирана</string>
+    <string name="error_login_invalid">Оваа комбинација на емаил адреса и лозинка е невалидна</string>
+    <string name="error_login_connection">Грешка во конекција</string>
+    <string name="error_login_unknown">Непозната грешка</string>
+
+</resources>

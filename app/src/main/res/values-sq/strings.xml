@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="debug_placeholder">PLACEHOLDER</string>
+
+    <!-- Activity titles -->
+    <string name="app_name">WiFi Buddy</string>
+    <string name="title_activity_maps">Harta</string>
+    <string name="title_activity_edit">Redakto Rrjetin</string>
+    <string name="title_activity_add">Shto Rrjet</string>
+    <string name="title_activity_login">Hyr</string>
+    <string name="scan_dialog_title">Mundëso lidhje WiFi?</string>
+
+    <!-- Navigation drawer strings -->
+    <string name="navigation_drawer_open">Hape panelin e navigacionit</string>
+    <string name="navigation_drawer_close">Mbylle panelin e navigacionit</string>
+    <string name="choose_dialog_title">Zgjedh WiFi rrjet për të shtuar</string>
+    <string-array name="drawer_labels">
+        <item>Profili</item>
+        <item>Rrjetet e Mia</item>
+        <item>Kërko Rrjete</item>
+        <item>Rreth Meje</item>
+    </string-array>
+    <string-array name="toolbar_titles">
+        <item>Profili</item>
+        <item>Rrjetet e Mia</item>
+        <item>Kërko Rrjete</item>
+        <item>Rreth Meje</item>
+    </string-array>
+
+    <!-- Action settings -->
+    <string name="action_settings">Cilësimet</string>
+    <string name="action_save">Ruaj</string>
+    <string name="action_scan">Kërko në afërsi</string>
+
+    <string name="header_private">Rrjete Private</string>
+    <string name="header_public">Rrjete Publike</string>
+
+    <!-- Profile fragment string -->
+    <string name="profile_email">Email:</string>
+    <string name="profile_password">Parulla aktuale:</string>
+    <string name="profile_repeat1_hint">Parulla e re:</string>
+    <string name="profile_repeat2_hint">Përsërit:</string>
+    <string name="profile_count_private">Rrjete Private:</string>
+    <string name="profile_count_public">Rrjete Publike:</string>
+    <string name="profile_error_password_change">Parulla nuk mund të ndryshohet</string>
+    <string name="profile_error_no_connection">Nuk ka lidhje interneti</string>
+    <string name="profile_error_connection">@string/error_login_connection</string>
+    <string name="profile_error_unknown">@string/error_login_unknown</string>
+
+    <!-- List item label strings -->
+    <string name="label_password">Parulla:</string>
+    <string name="label_updated">Ndryshuar më:</string>
+    <string name="label_publisher">Botues:</string>
+
+    <!-- Scan dialog strings -->
+    <string name="scan_dialog_question">Lidhja juaj WiFi duket të jetë e gjyumtuar.\nËshtë e domosdoshme për të kërkuar rrjete në afërsi.</string>
+    <string name="scan_dialog_action_positive">Pajtohem</string>
+    <string name="scan_dialog_action_negative">Nuk Pajtohem</string>
+    <string name="scan_progress">Duke kërkuar rrjete në afërsi</string>
+    <string name="scan_no_results">Asnjë rezultat. Kontrolloni nëse WiFi është e aktivizuar</string>
+    <string name="scan_no_match">Na vjen keq, nuk u gjetën rrjete që perputhen</string>
+    <string name="scan_none_in_range">Nuk ka rrjete në afërsi</string>
+    <string name="scan_not_found_range">Asnjë prej rrjeteve në afërsi nuk u gjet</string>
+    <!-- The network's password might have been changed in the meantime. -->
+    <string name="scan_connection_error">Ka ndodhur gabim autentik gjatë lidhjes me rrjetin</string>
+    <string name="scan_connection_success">Autentikim i suksesshëm me rrjetin </string>
+    <string name="scan_association_error">Ka ndodhur gabim asocimi gjatë lidhjes me rrjetin</string>
+
+    <string name="scan_bssid_different">ID-ja e rrjetit është e ndryshme nga rezultati i skenimit, por emri është i njëjtë</string>
+    <string name="scan_name_different">Emri i rrjetit është i ndryshëm nga rezultati i skenimit, por ID-ja është e njëjtë</string>
+
+    <!-- Login activity strings -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Parulla</string>
+    <string name="action_sign_in">Hyr</string>
+    <string name="action_register">Regjistrohu</string>
+    <string name="profile_change_success">Parulla u ndryshua me sukses</string>
+    <string name="login_success">Hyrje e suksesshme</string>
+    <string name="register_success">Përdoruesi u regjistrua me sukses</string>
+    <string name="error_field_required">Kjo fushë është e nevojshme</string>
+    <string name="error_invalid_email">Kjo adresë e-mail është invalide</string>
+    <string name="error_invalid_password">Kjo parullë është shumë e shkurtër</string>
+    <string name="error_passwords_no_match">Parullat duhet të përputhen</string>
+    <string name="error_incorrect_password">Kjo parullë është e pasaktë</string>
+    <string name="error_login_exists">Ky e-mail është veçmë i regjistruar</string>
+    <string name="error_login_invalid">Ky kombinim email dhe parullë është invalid</string>
+    <string name="error_login_connection">Ka ndodhur gabim në lidhje</string>
+    <string name="error_login_unknown">Ka ndodhur një gabim i panjohur</string>
+
+</resources>
