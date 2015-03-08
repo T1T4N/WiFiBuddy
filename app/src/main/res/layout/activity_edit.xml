@@ -38,8 +38,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_marginTop="8dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_marginBottom="8dp">
                     <LinearLayout
                         android:id="@+id/edit_layout_name"
@@ -174,7 +174,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/edit_layout_privacy"
-                        android:layout_toEndOf="@id/edit_label_latitude"/>
+                        android:layout_toRightOf="@id/edit_label_latitude"/>
                     <TextView
                         android:id="@+id/edit_label_longitude"
                         android:layout_width="wrap_content"
@@ -186,7 +186,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/edit_label_latitude"
-                        android:layout_toEndOf="@id/edit_label_longitude"/>
+                        android:layout_toRightOf="@id/edit_label_longitude"/>
 
                 </RelativeLayout>
             </RelativeLayout>

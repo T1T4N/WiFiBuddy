@@ -8,10 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_marginTop="@dimen/tile_padding_top_3row"
-        android:layout_marginStart="@dimen/tile_padding_side"
-        android:layout_marginEnd="@dimen/tile_padding_side_icon"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side_icon"
         android:text="@string/debug_placeholder"
         android:textSize="16sp"
         android:textColor="@android:color/black"/>
@@ -22,17 +22,17 @@
         android:layout_height="wrap_content"
         android:background="@drawable/ic_info"
         android:layout_alignTop="@id/scan_field_name"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="@dimen/tile_padding_side"
-        android:layout_marginEnd="@dimen/tile_padding_side"/>
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"/>
 
     <TextView
         android:id="@+id/scan_label_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scan_field_name"
-        android:layout_marginStart="@dimen/tile_padding_side"
-        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"
         android:text="@string/label_password"
         android:textSize="14sp"/>
     <TextView
@@ -40,8 +40,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scan_field_name"
-        android:layout_toEndOf="@+id/scan_label_password"
-        android:layout_marginStart="@dimen/tile_padding_small"
+        android:layout_toRightOf="@+id/scan_label_password"
+        android:layout_marginLeft="@dimen/tile_padding_small"
         android:text="@string/debug_placeholder"
         android:textSize="14sp"/>
 
@@ -50,16 +50,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scan_field_password"
-        android:layout_marginStart="@dimen/tile_padding_side"
-        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"
         android:text="@string/label_publisher"
         android:textSize="14sp"/>
     <TextView
         android:id="@+id/scan_field_publisher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@id/scan_field_password"
-        android:layout_toEndOf="@id/scan_label_publisher"
+        android:layout_alignLeft="@id/scan_field_password"
+        android:layout_toRightOf="@id/scan_label_publisher"
         android:layout_below="@+id/scan_field_password"
         android:layout_marginBottom="@dimen/tile_padding_bottom"
         android:text="@string/debug_placeholder"

@@ -9,8 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dialog_content_padding"
-        android:layout_marginEnd="@dimen/dialog_content_padding"
-        android:layout_marginStart="@dimen/dialog_content_padding"
+        android:layout_marginRight="@dimen/dialog_content_padding"
+        android:layout_marginLeft="@dimen/dialog_content_padding"
         android:layout_marginBottom="@dimen/dialog_content_padding_bottom">
         <TextView
             android:layout_width="wrap_content"
@@ -30,13 +30,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dialog_actions_height"
-        android:layout_marginEnd="@dimen/dialog_actions_padding_right"
+        android:layout_marginRight="@dimen/dialog_actions_padding_right"
         android:layout_marginBottom="@dimen/dialog_actions_padding_bottom">
         <Button
             android:id="@+id/dialog_wifi_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:text="@string/scan_dialog_action_positive"
             android:textColor="@color/colorPrimary"
             style="?android:attr/borderlessButtonStyle"
@@ -45,7 +45,7 @@
             android:id="@+id/dialog_wifi_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/dialog_wifi_ok"
+            android:layout_toLeftOf="@+id/dialog_wifi_ok"
             android:text="@string/scan_dialog_action_negative"
             android:textColor="@color/colorPrimary"
             style="?android:attr/borderlessButtonStyle"/>

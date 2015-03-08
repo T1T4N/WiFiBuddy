@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.MapFragment;
+import com.titantech.wifibuddy.R;
 
 public class PublicMapFragment extends MapFragment {
     private static final String TAG = "PUBLIC_MAP_FRAGMENT";
@@ -24,7 +25,8 @@ public class PublicMapFragment extends MapFragment {
     public View onCreateView(LayoutInflater arg0, ViewGroup arg1, Bundle arg2) {
         View v = super.onCreateView(arg0, arg1, arg2);
 
-        Fragment fragment = getParentFragment();
+        //Fragment fragment = getParentFragment();
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
         if (fragment != null && fragment instanceof OnMapReadyListener) {
             ((OnMapReadyListener) fragment).onMapReady();
         }

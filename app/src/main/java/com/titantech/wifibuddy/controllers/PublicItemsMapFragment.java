@@ -86,7 +86,8 @@ public class PublicItemsMapFragment extends Fragment
             @Override
             public void run() {
                 mMapFragment = PublicMapFragment.newInstance();
-                getChildFragmentManager().beginTransaction().replace(R.id.map_public, mMapFragment).commit();
+                getFragmentManager().beginTransaction().replace(R.id.map_public, mMapFragment).commit();
+                // getChildFragmentManager().beginTransaction().replace(R.id.map_public, mMapFragment).commit();
             }
         }, 220);
     }

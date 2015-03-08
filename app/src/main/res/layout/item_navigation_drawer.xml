@@ -6,15 +6,15 @@
         android:id="@+id/drawer_item_image"
         android:layout_width="@dimen/tile_icon_size"
         android:layout_height="@dimen/tile_icon_size"
-        android:layout_marginStart="@dimen/icon_padding_1row_left"
+        android:layout_marginLeft="@dimen/icon_padding_1row_left"
         android:layout_marginTop="@dimen/text_padding_1row_top"/>
     <TextView
         android:id="@+id/drawer_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/text_padding_1row_top"
-        android:layout_marginStart="@dimen/text_padding_1row_left"
-        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:layout_marginLeft="@dimen/text_padding_1row_left"
+        android:layout_marginRight="@dimen/tile_padding_side"
         android:paddingBottom="@dimen/text_padding_1row_bottom"
         android:textColor="@drawable/navigation_text_color"/>
 

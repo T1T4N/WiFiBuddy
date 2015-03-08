@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_auth" translatable="false">http://192.168.55.101:3000/Users/Authenticated</string>
-    <string name="url_register" translatable="false">http://192.168.55.101:3000/Users</string>
-    <string name="url_private_aps" translatable="false">http://192.168.55.101:3000/Users/Authenticated/AccessPoints</string>
-    <string name="url_public_aps" translatable="false">http://192.168.55.101:3000/AccessPoints</string>
-    <string name="url_instance_ap" translatable="false">http://192.168.55.101:3000/AccessPoints/</string>
+    <string name="url_auth" translatable="false">http://104.236.31.220:3000/Users/Authenticated</string>
+    <string name="url_register" translatable="false">http://104.236.31.220:3000/Users</string>
+    <string name="url_private_aps" translatable="false">http://104.236.31.220:3000/Users/Authenticated/AccessPoints</string>
+    <string name="url_public_aps" translatable="false">http://104.236.31.220:3000/AccessPoints</string>
+    <string name="url_instance_ap" translatable="false">http://104.236.31.220:3000/AccessPoints/</string>
 </resources>

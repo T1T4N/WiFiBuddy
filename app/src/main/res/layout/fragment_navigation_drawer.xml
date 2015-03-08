@@ -18,7 +18,7 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_alignTop="@id/navigation_image_header"
-        android:layout_marginStart="@dimen/tile_padding_side"
+        android:layout_marginLeft="@dimen/tile_padding_side"
         android:layout_marginTop="@dimen/text_padding_1row_top"
         android:id="@+id/navigation_image_avatar"/>
     <TextView
@@ -27,8 +27,8 @@
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"
         android:layout_alignBottom="@id/navigation_image_header"
-        android:layout_marginStart="@dimen/tile_padding_side"
-        android:layout_marginEnd="@dimen/tile_padding_side"
+        android:layout_marginLeft="@dimen/tile_padding_side"
+        android:layout_marginRight="@dimen/tile_padding_side"
         android:textColor="#FFFFFF"
         android:textStyle="bold"/>
 
