@@ -8,6 +8,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.titantech.wifibuddy.controllers.*;
 import com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListener;
@@ -42,6 +44,15 @@ public class MainActivity extends ActionBarActivity
     private TextView mNavigationEmail;
     private ImageView mNavigationAvatar;
 
+    private boolean doubleBackToExitPressedOnce;
+    private Handler mHandler;
+    private final Runnable mExitRunnable = new Runnable() {
+        @Override
+        public void run() {
+            doubleBackToExitPressedOnce = false;
+        }
+    };
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -51,6 +62,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler();
 
         User usr = getCredentials();
         if (usr.equals(User.genericUnauthorized())) {
@@ -202,9 +214,9 @@ public class MainActivity extends ActionBarActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+
         /*
-        //noinspection SimplifiableIfStatement
+        int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
         }
@@ -241,6 +253,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
+        doubleBackToExitPressedOnce = false;
         Log.d(TAG, "onResume called");
     }
 
@@ -254,5 +267,26 @@ public class MainActivity extends ActionBarActivity
     public void onLowMemory() {
         super.onLowMemory();
         Log.d(TAG, "onLowMemory called");
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        if (mHandler != null) { mHandler.removeCallbacks(mExitRunnable); }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click back again to exit", Toast.LENGTH_SHORT).show();
+
+        mHandler.postDelayed(mExitRunnable, 2000);
     }
 }
