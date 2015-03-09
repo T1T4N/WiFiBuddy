@@ -37,6 +37,8 @@ import com.titantech.wifibuddy.service.IntentFactory;
 
 import java.util.HashMap;
 
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -57,7 +59,7 @@ public class PrivateItemsFragment extends Fragment
     /**
      * The fragment's ListView/GridView.
      */
-    private ListView mListViewPrivate;
+    private StickyListHeadersListView mListViewPrivate;
     private SwipeDismissListViewTouchListener mSwipeDismissListener;
 
     /**
@@ -110,7 +112,7 @@ public class PrivateItemsFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_private, container, false);
 
         // Set the adapter
-        mListViewPrivate = (ListView) view.findViewById(R.id.list_private);
+        mListViewPrivate = (StickyListHeadersListView) view.findViewById(R.id.list_private);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.private_fab);
         fab.setOnClickListener(this);
@@ -127,7 +129,7 @@ public class PrivateItemsFragment extends Fragment
 
             final LoaderManager.LoaderCallbacks<Cursor> callbacks = this;
             mSwipeDismissListener = new SwipeDismissListViewTouchListener(
-                mListViewPrivate, new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                    mListViewPrivate.getWrappedList(), new SwipeDismissListViewTouchListener.DismissCallbacks() {
                 @Override
                 public boolean canDismiss(int position) {
                     return true;

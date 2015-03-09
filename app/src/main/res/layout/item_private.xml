@@ -4,23 +4,9 @@
                 android:layout_height="wrap_content"
                 android:minHeight="@dimen/tile_height_3row">
     <TextView
-        android:id="@+id/private_section_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:paddingTop="@dimen/tile_padding_small"
-        android:paddingBottom="@dimen/tile_padding_small"
-        android:paddingLeft="@dimen/tile_padding_side"
-        android:paddingRight="@dimen/tile_padding_side"
-        android:background="@color/light_grey"
-        android:textColor="@color/dark_grey"
-        android:visibility="gone"/>
-
-    <TextView
         android:id="@+id/private_field_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/private_section_header"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="@dimen/tile_padding_top_3row"
         android:layout_marginLeft="@dimen/tile_padding_side"

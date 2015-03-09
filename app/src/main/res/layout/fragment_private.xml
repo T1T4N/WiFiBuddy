@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     tools:context="com.titantech.wifibuddy.controllers.PrivateItemsFragment">
-    <ListView
+    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list_private"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

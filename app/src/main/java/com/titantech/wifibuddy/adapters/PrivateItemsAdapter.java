@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.titantech.wifibuddy.R;
@@ -20,10 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * Created by Robert on 25.01.2015.
- */
-public class PrivateItemsAdapter extends CursorAdapter {
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+
+public class PrivateItemsAdapter extends CursorAdapter implements StickyListHeadersAdapter {
     private static final String TAG = "PRIVATE_ADAPTER";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private LayoutInflater mInflater;
@@ -34,14 +32,14 @@ public class PrivateItemsAdapter extends CursorAdapter {
         super(context, c);
         this.mInflater = LayoutInflater.from(context);
         this.mSectionNames = sectionNames;
-        buildSectionFlags(c);
+        // buildSectionFlags(c);
     }
 
     public PrivateItemsAdapter(Context context, Cursor c, boolean autoRequery, Map<Integer, String> sectionNames) {
         super(context, c, autoRequery);
         this.mInflater = LayoutInflater.from(context);
         this.mSectionNames = sectionNames;
-        buildSectionFlags(c);
+        // buildSectionFlags(c);
     }
 
     @Override
@@ -50,7 +48,6 @@ public class PrivateItemsAdapter extends CursorAdapter {
         if (convertView == null) {
             convertView = this.mInflater.inflate(R.layout.item_private, null);
             viewHolder = new ViewHolder();
-            viewHolder.sectionHeader = (TextView) convertView.findViewById(R.id.private_section_header);
             viewHolder.apName = (TextView) convertView.findViewById(R.id.private_field_name);
             viewHolder.apPassword = (TextView) convertView.findViewById(R.id.private_field_password);
             viewHolder.apDate = (TextView) convertView.findViewById(R.id.private_field_updated);
@@ -60,24 +57,13 @@ public class PrivateItemsAdapter extends CursorAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Cursor c = getCursor();
-        c.moveToPosition(position);
-
-        int itemPrivacy = c.getInt(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY));
         try {
-            if (mSectionFlags[position]) {
-                viewHolder.sectionHeader.setVisibility(View.VISIBLE);
-                viewHolder.sectionHeader.setText(mSectionNames.get(itemPrivacy));
-            } else {
-                viewHolder.sectionHeader.setVisibility(View.GONE);
-            }
-        } catch (Exception ex) {
-            Log.d(TAG, "SECTION_ERROR: Array out of bounds " + position + ": " + mSectionFlags.length);
-        }
+            Cursor c = getCursor();
+            c.moveToPosition(position);
 
-        viewHolder.apName.setText(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)));
-        viewHolder.apPassword.setText(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)));
-        try {
+            viewHolder.apName.setText(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)));
+            viewHolder.apPassword.setText(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)));
+
             Date date = Utils.parseDate(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_LASTACCESS)));
             viewHolder.apDate.setText(format.format(date));
         } catch (Exception ex){
@@ -107,7 +93,7 @@ public class PrivateItemsAdapter extends CursorAdapter {
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         Log.d(TAG, "Swapping adapter cursor");
-        buildSectionFlags(newCursor);
+        // buildSectionFlags(newCursor);
         return super.swapCursor(newCursor);
     }
 
@@ -153,8 +139,46 @@ public class PrivateItemsAdapter extends CursorAdapter {
             ex.printStackTrace();
         }
     }
-    private static class ViewHolder {
+
+    @Override
+    public View getHeaderView(int position, View convertView, ViewGroup viewGroup) {
+        HeaderHolder headerHolder;
+        if (convertView == null) {
+            convertView = this.mInflater.inflate(R.layout.item_private_header, null);
+            headerHolder = new HeaderHolder();
+            headerHolder.sectionHeader = (TextView) convertView.findViewById(R.id.private_section_header);
+
+            convertView.setTag(headerHolder);
+        } else {
+            headerHolder = (HeaderHolder) convertView.getTag();
+        }
+
+        try {
+            Cursor c = getCursor();
+            c.moveToPosition(position);
+            int itemPrivacy = c.getInt(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY));
+            headerHolder.sectionHeader.setText(mSectionNames.get(itemPrivacy));
+        } catch (Exception ex) {
+            Log.d(TAG, "SECTION_ERROR: ");
+            ex.printStackTrace();
+        }
+
+        return convertView;
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+        Cursor c = getCursor();
+        c.moveToPosition(position);
+
+        return c.getInt(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PRIVACY));
+    }
+
+    private static class HeaderHolder {
         TextView sectionHeader;
+    }
+
+    private static class ViewHolder {
         TextView apName;
         TextView apPassword;
         TextView apDate;

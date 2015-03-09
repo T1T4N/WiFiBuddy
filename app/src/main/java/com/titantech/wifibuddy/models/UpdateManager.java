@@ -244,9 +244,7 @@ public class UpdateManager {
         long diff = timeNow.getTime() - mLastUpdate.getTime();
         long diffMinutes = diff / (60 * 1000); // % 60;
 
-        // TODO: Change when debugging complete
-        return diffMinutes > 0;
-        // return diffMinutes > 60;
+        return diffMinutes > 15;
     }
 
     private boolean shouldUpdate() {
