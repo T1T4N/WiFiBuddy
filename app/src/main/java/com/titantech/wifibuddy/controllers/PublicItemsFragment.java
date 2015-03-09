@@ -25,6 +25,7 @@ import com.titantech.wifibuddy.controllers.listeners.OnFragmentInteractionListen
 import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.Constants;
+import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 import com.titantech.wifibuddy.service.IntentFactory;
 
@@ -74,6 +75,7 @@ public class PublicItemsFragment extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                UpdateManager.getInstance().updateDatabase();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

@@ -6,6 +6,7 @@ package com.titantech.wifibuddy.models;
 public class Constants {
     public static final String PREFS_NAME = "com.titantech.wifibuddy";
     public static final String PREFS_KEY_LAST_UPDATE = "last_update";
+    public static final String PREFS_KEY_GOT_PRIVATE = "got_private";
 
     public static final String TASK_STARTED = "com.titantech.wifibuddy.TASK_STARTED";
     public static final String TASK_COMPLETED = "com.titantech.wifibuddy.TASK_COMPLETED";

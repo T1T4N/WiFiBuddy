@@ -30,6 +30,7 @@
     <!-- Action settings -->
     <string name="action_settings">Cilësimet</string>
     <string name="action_save">Ruaj</string>
+    <string name="action_sync">Sync</string>
     <string name="action_scan">Kërko në afërsi</string>
 
     <string name="header_private">Rrjete Private</string>

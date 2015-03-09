@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
@@ -98,14 +99,30 @@ public class UpdateManager {
     public void updateDatabase() {
         if(shouldUpdate()){
             Toast.makeText(mApplicationContext, "Updating database", Toast.LENGTH_SHORT).show();
-
-            Intent intent = IntentFactory.getPrivateItems(mApplicationContext);
-            mApplicationContext.startService(intent);
-            intent = IntentFactory.getPublicItems(mApplicationContext);
-            mApplicationContext.startService(intent);
-
+            getPrivateItems();
+            getPublicItems();
             mLastUpdate = new Date();
             writeUpdateTime(mLastUpdate);
+        }
+    }
+
+    public void getPublicItems() {
+        Intent intent = IntentFactory.getPublicItems(mApplicationContext);
+        mApplicationContext.startService(intent);
+    }
+
+    public void getPrivateItems() {
+        SharedPreferences preferences
+                = mApplicationContext.getSharedPreferences(Constants.PREFS_NAME, Activity.MODE_PRIVATE);
+        boolean gotPrivate = preferences.getBoolean(Constants.PREFS_KEY_GOT_PRIVATE, false);
+        if(!gotPrivate) {
+            Intent intent = IntentFactory.getPrivateItems(mApplicationContext);
+            mApplicationContext.startService(intent);
+
+            SharedPreferences.Editor editor =
+                    mApplicationContext.getSharedPreferences(Constants.PREFS_NAME, Activity.MODE_PRIVATE).edit();
+            editor.putBoolean(Constants.PREFS_KEY_GOT_PRIVATE, true);
+            editor.apply();
         }
     }
 

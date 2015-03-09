@@ -14,11 +14,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -32,6 +37,7 @@ import com.titantech.wifibuddy.R;
 import com.titantech.wifibuddy.controllers.listeners.SectionChangedListener;
 import com.titantech.wifibuddy.db.WifiDbOpenHelper;
 import com.titantech.wifibuddy.models.Constants;
+import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.provider.WifiContentProvider;
 import com.titantech.wifibuddy.service.IntentFactory;
 
@@ -76,7 +82,7 @@ public class PublicItemsMapFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
-
+        setHasOptionsMenu(true);
         mRootView = (LinearLayout)inflater.inflate(R.layout.fragment_public_map, container, false);
         return mRootView;
     }
@@ -184,6 +190,29 @@ public class PublicItemsMapFragment extends Fragment
     public void onResume() {
         super.onResume();
         setupMapFragment();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case R.id.action_sync:
+                UpdateManager.getInstance().updateDatabase();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "Refreshing", Toast.LENGTH_LONG).show();
+                    }
+                }, 500);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_public_map, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

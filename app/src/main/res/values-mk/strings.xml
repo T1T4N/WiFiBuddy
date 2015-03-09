@@ -30,6 +30,7 @@
     <!-- Action settings -->
     <string name="action_settings">Поставки</string>
     <string name="action_save">Сними</string>
+    <string name="action_sync">Sync</string>
     <string name="action_scan">Скенирај во близина</string>
 
     <string name="header_private">Приватни мрежи</string>

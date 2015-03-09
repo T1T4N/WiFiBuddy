@@ -30,6 +30,7 @@
     <!-- Action settings -->
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
+    <string name="action_sync">Sync</string>
     <string name="action_scan">Scan nearby</string>
 
     <string name="header_private">Private Access Points</string>
