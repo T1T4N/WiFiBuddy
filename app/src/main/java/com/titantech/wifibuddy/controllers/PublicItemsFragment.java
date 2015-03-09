@@ -75,7 +75,7 @@ public class PublicItemsFragment extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                UpdateManager.getInstance().updateDatabase();
+                UpdateManager.getInstance().getPublicItems();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

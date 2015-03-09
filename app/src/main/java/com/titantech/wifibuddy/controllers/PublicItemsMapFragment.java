@@ -197,7 +197,7 @@ public class PublicItemsMapFragment extends Fragment
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case R.id.action_sync:
-                UpdateManager.getInstance().updateDatabase();
+                UpdateManager.getInstance().getPublicItems();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

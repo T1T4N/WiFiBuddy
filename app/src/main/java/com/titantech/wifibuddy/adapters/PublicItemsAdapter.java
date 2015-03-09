@@ -47,12 +47,11 @@ public class PublicItemsAdapter extends CursorAdapter {
         viewHolder.apName.setText(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_NAME)));
         viewHolder.apPassword.setText(
             "Password: " + c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PASSWORD)) +
-                "    Security: " + c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_SECURITY))
+                "  Security: " + c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_SECURITY))
 
         );
         viewHolder.apPublisher.setText(
-            "Internal id: " + String.valueOf(c.getInt(c.getColumnIndex(WifiDbOpenHelper.INTERNAL_ID))) +
-                "    Publisher: " + String.valueOf(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER_MAIL)))
+                "Publisher: " + String.valueOf(c.getString(c.getColumnIndex(WifiDbOpenHelper.COLUMN_PUBLISHER_MAIL)))
         );
         return convertView;
     }
