@@ -1,7 +1,8 @@
 package com.titantech.wifibuddy.models;
 
 /**
- * Created by Robert on 24.01.2015.
+ * Created by Robert on 24.01.2015
+ *
  */
 public class Constants {
     public static final String PREFS_NAME = "com.titantech.wifibuddy";

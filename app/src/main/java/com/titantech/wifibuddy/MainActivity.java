@@ -30,7 +30,6 @@ import com.titantech.wifibuddy.models.UpdateManager;
 import com.titantech.wifibuddy.models.User;
 import com.titantech.wifibuddy.models.Utils;
 
-
 public class MainActivity extends ActionBarActivity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks,
     OnFragmentInteractionListener, SectionChangedListener {
